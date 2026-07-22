@@ -25,7 +25,7 @@ each unit cell.
 #### Output
 
 <p align="center">
-  <img src="figures/p01_periodic_dielectric.png" width="550">
+  <img src="figures/p01_periodic_dielectric.png" width="650">
 </p>
 
 This periodic refractive-index profile serves as the fundamental model for
@@ -81,12 +81,19 @@ Vertical dashed lines indicate neighboring unit-cell boundaries.
 #### Output
 
 <p align="center">
-  <img src="figures/p02_bloch_wave_visualization.png" width="550">
+  <img src="figures/p02_bloch_wave_visualization.png" width="650">
 </p>
 
-The visualization shows that the periodic part repeats in every unit cell, while
-the complete Bloch wave accumulates a phase across the lattice according to
+The first figure compares the periodic part, the plane-wave factor, and the
+complete Bloch wave.
+
+<p align="center">
+  <img src="figures/p02_bloch_translation_verification.png" width="650">
+</p>
+
+The second figure verifies the Bloch translation property by comparing
+$E_k(x+a)$ with $e^{ika}E_k(x)$. The two curves overlap, confirming that
 
 $$
-E_k(x+a) = e^{ika}E_k(x).
+E_k(x+a) = e^{ika}E_k(x)
 $$

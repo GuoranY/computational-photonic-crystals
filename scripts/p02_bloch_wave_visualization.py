@@ -27,9 +27,9 @@ wave_vector = 0.6 * np.pi / lattice_constant
 periodic_modulation_amplitude = 0.35
 
 
-# --------------------------------------------------
+# =============================================================================
 # Construct the Bloch wave
-# --------------------------------------------------
+# =============================================================================
 
 periodic_part = (
     1.0
@@ -42,9 +42,9 @@ plane_wave = np.exp(1j * wave_vector * x)
 bloch_wave = periodic_part * plane_wave
 
 
-# --------------------------------------------------
+# =============================================================================
 # Visualize the Bloch wave
-# --------------------------------------------------
+# =============================================================================
 
 figure, axes = plt.subplots(
     nrows=3,
@@ -106,6 +106,56 @@ plt.tight_layout()
 
 plt.savefig(
     "../figures/p02_bloch_wave_visualization.png",
+    dpi=300,
+    bbox_inches="tight"
+)
+
+plt.show()
+
+# =============================================================================
+# Verify the Bloch translation property
+# =============================================================================
+
+shifted_bloch_wave = (
+    1.0
+    + periodic_modulation_amplitude
+    * np.cos(
+        reciprocal_lattice_vector
+        * (x + lattice_constant)
+    )
+) * np.exp(
+    1j * wave_vector * (x + lattice_constant)
+)
+
+phase_shifted_bloch_wave = (
+    np.exp(1j * wave_vector * lattice_constant)
+    * bloch_wave
+)
+
+plt.figure(figsize=(10, 4))
+
+plt.plot(
+    x,
+    np.real(shifted_bloch_wave),
+    label=r"$\mathrm{Re}[E_k(x+a)]$"
+)
+
+plt.plot(
+    x,
+    np.real(phase_shifted_bloch_wave),
+    linestyle="--",
+    label=r"$\mathrm{Re}[e^{ika}E_k(x)]$"
+)
+
+plt.xlabel(r"Position $x$")
+plt.ylabel("Amplitude")
+plt.title("Verification of the Bloch Translation Property")
+plt.grid(True, alpha=0.3)
+plt.legend()
+plt.tight_layout()
+
+plt.savefig(
+    "../figures/p02_bloch_translation_verification.png",
     dpi=300,
     bbox_inches="tight"
 )
