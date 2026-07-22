@@ -1,3 +1,15 @@
+"""
+Project:
+    Computational Photonic Crystals
+
+Module:
+    P02 - Bloch Wave Visualization
+
+Description:
+    Construct and visualize a one-dimensional Bloch wave, and verify
+    its translation property across one lattice constant.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 
