@@ -50,27 +50,27 @@ part, plane-wave factor, and complete spatial form.
 
 A Bloch wave is written as
 
-$$
+```math
 E_k(x) = u_k(x)e^{ikx},
-$$
+```
 
 where the periodic part satisfies
 
-$$
+```math
 u_k(x+a) = u_k(x).
-$$
+```
 
 For visualization, the periodic part is modeled as
 
-$$
+```math
 u_k(x) = 1 + A\cos(Gx),
-$$
+```
 
 with
 
-$$
+```math
 G = \frac{2\pi}{a}.
-$$
+```
 
 The script compares:
 
@@ -96,9 +96,9 @@ complete Bloch wave.
 The second figure verifies the Bloch translation property by comparing
 $E_k(x+a)$ with $e^{ika}E_k(x)$. The two curves overlap, confirming that
 
-$$
+```math
 E_k(x+a) = e^{ika}E_k(x).
-$$
+```
 
 ### P03 — Bragg Scattering and Standing Waves
 
@@ -119,58 +119,56 @@ distributions within the periodic dielectric structure.
 
 At the boundary of the first Brillouin zone,
 
-$$
+```math
 k_{\mathrm{B}} = \frac{\pi}{a},
-$$
+```
 
 the reciprocal-lattice vector is
 
-$$
+```math
 G = \frac{2\pi}{a}.
-$$
+```
 
 The periodic dielectric structure couples the forward-propagating wave
 $e^{ik_{\mathrm{B}}x}$ to the backward-propagating wave
 $e^{-ik_{\mathrm{B}}x}$ because
 
-$$
+```math
 k_{\mathrm{B}} - G = -k_{\mathrm{B}}.
-$$
+```
 
 The forward- and backward-propagating waves can be combined as
 
-$$
-e^{ik_{\mathrm{B}}x} + e^{-ik_{\mathrm{B}}x}
-= 2\cos(k_{\mathrm{B}}x),
-$$
+```math
+e^{ik_{\mathrm{B}}x} + e^{-ik_{\mathrm{B}}x} = 2\cos(k_{\mathrm{B}}x),
+```
 
 and
 
-$$
-e^{ik_{\mathrm{B}}x} - e^{-ik_{\mathrm{B}}x}
-= 2i\sin(k_{\mathrm{B}}x).
-$$
+```math
+e^{ik_{\mathrm{B}}x} - e^{-ik_{\mathrm{B}}x} = 2i\sin(k_{\mathrm{B}}x).
+```
 
 The symmetric and antisymmetric combinations of these counter-propagating
 waves form two standing-wave modes:
 
-$$
+```math
 E_{\cos}(x) = \cos(k_{\mathrm{B}}x),
-$$
+```
 
-$$
+```math
 E_{\sin}(x) = \sin(k_{\mathrm{B}}x).
-$$
+```
 
 Their corresponding field intensities are
 
-$$
+```math
 |E_{\cos}(x)|^2 = \cos^2(k_{\mathrm{B}}x),
-$$
+```
 
-$$
+```math
 |E_{\sin}(x)|^2 = \sin^2(k_{\mathrm{B}}x).
-$$
+```
 
 Although the two modes have the same wave-vector magnitude, their intensity
 maxima occur in different parts of the unit cell. As a result, they overlap
@@ -207,27 +205,22 @@ using the transfer-matrix method.
 Within each homogeneous dielectric layer, the electric field is represented as
 a superposition of right- and left-propagating waves:
 
-$$
+```math
 E(x) = A e^{iqx} + B e^{-iqx},
-$$
+```
 
 where
 
-$$
+```math
 q = \frac{n\omega}{c}.
-$$
+```
 
 Propagation through a layer of thickness $d$ is described by the propagation
 matrix
 
-$$
-P(n,d,\omega)
-=
-\begin{pmatrix}
-e^{iqd} & 0 \\
-0 & e^{-iqd}
-\end{pmatrix}.
-$$
+```math
+P(n,d,\omega) = \begin{pmatrix} e^{iqd} & 0 \\ 0 & e^{-iqd} \end{pmatrix}.
+```
 
 At an interface between two dielectric materials with refractive indices
 $n_i$ and $n_j$, the wave amplitudes are related by an interface matrix.
@@ -236,18 +229,18 @@ Combining the propagation and interface matrices gives the transfer matrix of
 one unit cell. Repeating the unit-cell matrix over multiple periods gives the
 total transfer matrix of the finite photonic crystal:
 
-$$
+```math
 M_{\mathrm{total}} = M_{\mathrm{cell}}^N,
-$$
+```
 
 where $N$ is the number of unit cells.
 
 For incidence and exit through the same surrounding medium, the power
 transmission coefficient is calculated from the transmission amplitude $t$ as
 
-$$
+```math
 T = |t|^2.
-$$
+```
 
 #### Output
 
@@ -277,54 +270,45 @@ frequency regions of an infinite one-dimensional photonic crystal.
 According to Bloch's theorem, the field amplitudes in neighboring unit cells are
 related by
 
-$$
-\begin{pmatrix}
-A(x+a) \\
-B(x+a)
-\end{pmatrix}
-=
-e^{ika}
-\begin{pmatrix}
-A(x) \\
-B(x)
-\end{pmatrix}.
-$$
+```math
+\begin{pmatrix} A(x+a) \\ B(x+a) \end{pmatrix} = e^{ika} \begin{pmatrix} A(x) \\ B(x) \end{pmatrix}.
+```
 
 Therefore, the Bloch factor $e^{ika}$ is an eigenvalue of the unit-cell transfer
 matrix $M$.
 
 For a lossless unit cell,
 
-$$
+```math
 \det(M) = 1,
-$$
+```
 
 and the eigenvalue equation gives the Bloch dispersion relation
 
-$$
-\cos(ka) = \frac{1}{2}\operatorname{Tr}(M).
-$$
+```math
+\cos(ka) = \frac{1}{2}\mathrm{Tr}(M).
+```
 
 Define the Bloch function
 
-$$
-F(\omega) = \frac{1}{2}\operatorname{Tr}(M).
-$$
+```math
+F(\omega) = \frac{1}{2}\mathrm{Tr}(M).
+```
 
 When
 
-$$
+```math
 |F(\omega)| \leq 1,
-$$
+```
 
 a real Bloch wavevector exists, so the corresponding frequency belongs to an
 allowed photonic band.
 
 When
 
-$$
+```math
 |F(\omega)| > 1,
-$$
+```
 
 the Bloch wavevector becomes complex. The field then decays exponentially
 through the crystal, and the corresponding frequency lies inside a forbidden
@@ -363,38 +347,36 @@ allowed and forbidden frequency regions.
 
 The Bloch wavevector is obtained from the dispersion relation
 
-$$
+```math
 \cos(ka) = F(\omega),
-$$
+```
 
 where
 
-$$
-F(\omega) = \frac{1}{2}\operatorname{Tr}(M).
-$$
+```math
+F(\omega) = \frac{1}{2}\mathrm{Tr}(M).
+```
 
 It can therefore be written as
 
-$$
-k(\omega) = \frac{1}{a}\cos^{-1}\left[F(\omega)\right].
-$$
+```math
+k(\omega) = \frac{1}{a}\arccos\left[F(\omega)\right].
+```
 
 Inside an allowed band, $|F(\omega)|\leq 1$, so $k$ is real and the Bloch wave
 propagates through the periodic structure.
 
 Inside a forbidden band, $|F(\omega)|>1$, so $k$ becomes complex:
 
-$$
+```math
 k = k_{\mathrm{r}} + i k_{\mathrm{i}}.
-$$
+```
 
 The corresponding Bloch factor is
 
-$$
-e^{ikx}
-=
-e^{ik_{\mathrm{r}}x}e^{-k_{\mathrm{i}}x}.
-$$
+```math
+e^{ikx} = e^{ik_{\mathrm{r}}x}e^{-k_{\mathrm{i}}x}.
+```
 
 The real part $k_{\mathrm{r}}$ describes the spatial phase variation, while the
 imaginary part $k_{\mathrm{i}}$ gives the exponential attenuation rate inside
@@ -431,52 +413,49 @@ frequencies and the corresponding real Bloch wavevectors.
 For each normalized frequency, the unit-cell transfer matrix is constructed and
 the Bloch relation
 
-$$
-\cos(ka) = \frac{1}{2}\operatorname{Tr}(M)
-$$
+```math
+\cos(ka) = \frac{1}{2}\mathrm{Tr}(M)
+```
 
 is evaluated.
 
 Only frequencies satisfying
 
-$$
-\left|
-\frac{1}{2}\operatorname{Tr}(M)
-\right|
-\leq 1
-$$
+```math
+\left| \frac{1}{2}\mathrm{Tr}(M) \right| \leq 1
+```
 
 are included because these frequencies produce real Bloch wavevectors.
 
 The horizontal axis is the normalized Bloch wavevector
 
-$$
+```math
 \frac{ka}{\pi},
-$$
+```
 
 and the vertical axis is the normalized frequency
 
-$$
+```math
 \frac{\omega a}{2\pi c}.
-$$
+```
 
 The band structure is displayed along the one-dimensional high-symmetry path
 
-$$
+```math
 X \rightarrow \Gamma \rightarrow X,
-$$
+```
 
 where
 
-$$
+```math
 \Gamma: k=0
-$$
+```
 
 and
 
-$$
+```math
 X: k=\pm\frac{\pi}{a}.
-$$
+```
 
 #### Output
 
