@@ -123,7 +123,7 @@ project_root = Path(__file__).resolve().parents[1]
 figure_directory = project_root / "figures"
 figure_directory.mkdir(parents=True, exist_ok=True)
 
-output_path = figure_directory / "p08_2d_dielectric_structure.png"
+output_path = figure_directory / "p11_2d_dielectric_structure.png"
 fig.savefig(output_path, dpi=300, bbox_inches="tight")
 
 plt.show()

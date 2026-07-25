@@ -471,7 +471,7 @@ Each continuous branch represents an allowed photonic band. The empty frequency
 intervals separating neighboring branches are photonic band gaps, in which no
 real Bloch wavevector exists.
 
-### P08 — Two-Dimensional Periodic Dielectric
+### P11 — Two-Dimensional Periodic Dielectric
 
 Construct and visualize a two-dimensional square lattice of dielectric rods
 embedded in an air background.
@@ -514,7 +514,7 @@ The relative permittivity is obtained from
 
 <p align="center">
   <img
-    src="figures/p08_2d_dielectric_structure.png"
+    src="figures/p11_2d_dielectric_structure.png"
     alt="Two-dimensional square lattice of dielectric rods in air"
     width="650"
   >
@@ -536,7 +536,7 @@ computational-photonic-crystals/
 │   ├── p05_bloch_band_structure.py
 │   ├── p06_bloch_wavevector.py
 │   ├── p07_photonic_band_structure.py
-│   └── p08_2d_dielectric_structure.py
+│   └── p11_2d_dielectric_structure.py
 ├── utils/
 │   ├── transfer_matrix_utils.py
 │   └── bloch_utils.py
@@ -550,7 +550,7 @@ computational-photonic-crystals/
 │   ├── p05_allowed_forbidden_bands.png
 │   ├── p06_bloch_wavevector.png
 │   ├── p07_photonic_band_structure.png
-│   └── p08_2d_dielectric_structure.png
+│   └── p11_2d_dielectric_structure.png
 ├── docs/
 ├── requirements.txt
 ├── .gitignore
