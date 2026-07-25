@@ -27,7 +27,11 @@ each unit cell.
 #### Output
 
 <p align="center">
-  <img src="figures/p01_periodic_dielectric.png" width="650">
+  <img
+    src="figures/p01_periodic_dielectric.png"
+    alt="One-dimensional periodic dielectric refractive-index profile"
+    width="650"
+  >
 </p>
 
 This periodic refractive-index profile serves as the fundamental model for
@@ -467,6 +471,59 @@ Each continuous branch represents an allowed photonic band. The empty frequency
 intervals separating neighboring branches are photonic band gaps, in which no
 real Bloch wavevector exists.
 
+### P08 — Two-Dimensional Periodic Dielectric
+
+Construct and visualize a two-dimensional square lattice of dielectric rods
+embedded in an air background.
+
+#### Parameters
+
+- Background refractive index: $n_{\mathrm{bg}} = 1.0$
+- Rod refractive index: $n_{\mathrm{rod}} = 3.5$
+- Lattice constant: $a = 1.0$
+- Rod radius: $r = 0.2a$
+- Number of unit cells: $6 \times 6$
+
+#### Model
+
+Identical circular dielectric rods are placed at the center of each unit cell
+of a two-dimensional square lattice. The refractive-index distribution is
+periodic along both the $x$- and $y$-directions:
+
+```math
+n(x + a, y) = n(x, y),
+```
+
+```math
+n(x, y + a) = n(x, y).
+```
+
+A point $(x,y)$ lies inside a rod centered at $(x_c,y_c)$ when
+
+```math
+(x-x_c)^2 + (y-y_c)^2 \leq r^2.
+```
+
+The relative permittivity is obtained from
+
+```math
+\varepsilon_r(x,y) = n^2(x,y).
+```
+
+#### Output
+
+<p align="center">
+  <img
+    src="figures/p08_2d_dielectric_structure.png"
+    alt="Two-dimensional square lattice of dielectric rods in air"
+    width="650"
+  >
+</p>
+
+The resulting structure serves as the real-space geometric foundation for
+two-dimensional reciprocal-lattice, Brillouin-zone, and photonic-band
+calculations.
+
 ## Project Structure
 
 ```text
@@ -478,7 +535,8 @@ computational-photonic-crystals/
 │   ├── p04_transfer_matrix.py
 │   ├── p05_bloch_band_structure.py
 │   ├── p06_bloch_wavevector.py
-│   └── p07_photonic_band_structure.py
+│   ├── p07_photonic_band_structure.py
+│   └── p08_2d_dielectric_structure.py
 ├── utils/
 │   ├── transfer_matrix_utils.py
 │   └── bloch_utils.py
@@ -491,7 +549,8 @@ computational-photonic-crystals/
 │   ├── p05_bloch_function.png
 │   ├── p05_allowed_forbidden_bands.png
 │   ├── p06_bloch_wavevector.png
-│   └── p07_photonic_band_structure.png
+│   ├── p07_photonic_band_structure.png
+│   └── p08_2d_dielectric_structure.png
 ├── docs/
 ├── requirements.txt
 ├── .gitignore
@@ -504,5 +563,8 @@ The one-dimensional photonic-crystal foundation is complete, including periodic
 dielectric modeling, Bloch waves, Bragg standing waves, transfer-matrix analysis,
 photonic band-gap identification, complex Bloch wavevectors, and photonic band
 structures.
-Further development will extend the project to defect modes, optical cavities,
-waveguides, and two-dimensional photonic crystals.
+
+Development has now progressed to two-dimensional photonic crystals, beginning
+with the construction of a square lattice of dielectric rods in air. Future
+modules will introduce reciprocal lattices, Brillouin zones, two-dimensional
+band structures, defect cavities, and waveguides.
