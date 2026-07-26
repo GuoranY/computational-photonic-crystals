@@ -714,6 +714,144 @@ unit cell and therefore change the band gap itself, whereas the number of unit
 cells controls how strongly a finite crystal suppresses transmission within
 that gap.
 
+### P09 — One-Dimensional Band-Edge Field Profiles
+
+Locate the edges of the first photonic band gap and visualize the corresponding
+electric-field intensity profiles in the one-dimensional periodic dielectric.
+
+#### Parameters
+
+- Material A refractive index: $n_1 = 1.0$
+- Material B refractive index: $n_2 = 3.5$
+- Lattice constant: $a = 1.0$
+- Fill fraction: $0.5$
+- Number of displayed unit cells: $6$
+
+#### Model
+
+The first photonic band gap is located using the Bloch function
+
+```math
+F(\nu)
+=
+\frac{1}{2}
+\mathrm{Tr}
+\left(
+M_{\mathrm{cell}}
+\right),
+```
+
+where the normalized frequency is
+
+```math
+\nu
+=
+\frac{\omega a}{2\pi c}.
+```
+
+The lower and upper band-edge frequencies satisfy
+
+```math
+\left|F(\nu)\right|=1.
+```
+
+For the selected dielectric structure, the first band-gap edges are approximately
+
+```math
+\nu_{\mathrm{lower}}
+\approx 0.155319,
+```
+
+and
+
+```math
+\nu_{\mathrm{upper}}
+\approx 0.263047.
+```
+
+At a band edge, the Bloch eigenvalue is either $+1$ or $-1$, so the
+electromagnetic state satisfies
+
+```math
+M_{\mathrm{cell}}\mathbf{v}
+=
+\lambda\mathbf{v},
+\qquad
+\lambda=\pm1.
+```
+
+The electric field inside each homogeneous layer is reconstructed as a
+superposition of forward- and backward-propagating waves:
+
+```math
+E(x) = E_{+}e^{iqx} + E_{-}e^{-iqx},
+```
+
+where
+
+```math
+q = \frac{n\omega}{c}.
+```
+
+The normalized electric-field intensity is then calculated from
+
+```math
+I(x)
+=
+\frac{|E(x)|^2}
+{\max |E(x)|^2}.
+```
+
+The two band-edge modes form different standing-wave patterns.
+
+The lower-frequency mode is concentrated mainly in the high-index regions,
+where the relative permittivity
+
+```math
+\varepsilon_r=n^2
+```
+
+is larger.
+
+The upper-frequency mode is concentrated mainly in the low-index regions,
+where the relative permittivity is smaller.
+
+Because the two modes overlap differently with the dielectric structure, they
+acquire different eigenfrequencies. This frequency splitting separates the
+lower and upper photonic bands and produces the photonic band gap.
+
+#### Output
+
+<p align="center">
+  <img
+    src="figures/p09_band_edge_field_profiles.png"
+    alt="First photonic band gap and corresponding lower- and upper-edge electric-field intensity profiles"
+    width="650"
+  >
+</p>
+
+The upper panel identifies the first photonic band gap from the condition
+$|F(\nu)|>1$ and marks its lower and upper frequency edges.
+
+The middle panel shows the lower band-edge mode, whose electric-field intensity
+is concentrated primarily in the high-index layers.
+
+The lower panel shows the upper band-edge mode, whose electric-field intensity
+is concentrated primarily in the low-index layers.
+
+These spatial field profiles provide a direct visualization of the band-gap
+opening caused by Bragg coupling and dielectric-frequency splitting.
+
+The physical mechanism can be summarized as
+
+```math
+\text{different spatial localization}
+\rightarrow
+\text{different eigenfrequencies}
+\rightarrow
+\text{photonic band-gap opening}.
+```
+
 ### P11 — Two-Dimensional Periodic Dielectric
 
 Construct and visualize a two-dimensional square lattice of dielectric rods
@@ -780,6 +918,7 @@ computational-photonic-crystals/
 │   ├── p06_bloch_wavevector.py
 │   ├── p07_photonic_band_structure.py
 │   ├── p08_band_gap_parameter_study.py
+│   ├── p09_band_edge_field_profiles.py
 │   └── p11_2d_dielectric_structure.py
 ├── utils/
 │   ├── transfer_matrix_utils.py
@@ -805,6 +944,7 @@ computational-photonic-crystals/
 │   ├── p08_index_contrast_gap_width.png
 │   ├── p08_index_contrast_relative_gap_width.png
 │   ├── p08_index_contrast_transmission.png
+│   ├── p09_band_edge_field_profiles.png
 │   └── p11_2d_dielectric_structure.png
 ├── docs/
 ├── requirements.txt
@@ -814,12 +954,18 @@ computational-photonic-crystals/
 
 ## Status
 
-The one-dimensional photonic-crystal foundation is complete, including periodic
-dielectric modeling, Bloch waves, Bragg standing waves, transfer-matrix analysis,
-photonic band-gap identification, complex Bloch wavevectors, and photonic band
-structures.
+The project currently includes a detailed one-dimensional photonic-crystal
+model, covering periodic dielectric structures, Bloch waves, Bragg standing
+waves, transfer-matrix analysis, photonic band-gap identification, complex
+Bloch wavevectors, photonic band structures, parameter-dependent gap behavior,
+and band-edge electric-field profiles.
 
-Development has now progressed to two-dimensional photonic crystals, beginning
-with the construction of a square lattice of dielectric rods in air. Future
-modules will introduce reciprocal lattices, Brillouin zones, two-dimensional
-band structures, defect cavities, and waveguides.
+The band-edge field calculations directly show that the lower- and
+upper-frequency modes are concentrated in different dielectric regions,
+providing a spatial explanation for photonic band-gap opening.
+
+A preliminary two-dimensional square lattice of dielectric rods has also been
+constructed. The next one-dimensional module will introduce a defect layer and
+investigate localized defect modes inside the photonic band gap. Later modules
+will extend the project to reciprocal lattices, Brillouin zones,
+two-dimensional band structures, defect cavities, and waveguides.
