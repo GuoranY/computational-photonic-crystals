@@ -779,10 +779,12 @@ computational-photonic-crystals/
 │   ├── p05_bloch_band_structure.py
 │   ├── p06_bloch_wavevector.py
 │   ├── p07_photonic_band_structure.py
+│   ├── p08_band_gap_parameter_study.py
 │   └── p11_2d_dielectric_structure.py
 ├── utils/
 │   ├── transfer_matrix_utils.py
-│   └── bloch_utils.py
+│   ├── bloch_utils.py
+│   └── transmission_utils.py
 ├── figures/
 │   ├── p01_periodic_dielectric.png
 │   ├── p02_bloch_wave_visualization.png
@@ -793,6 +795,16 @@ computational-photonic-crystals/
 │   ├── p05_allowed_forbidden_bands.png
 │   ├── p06_bloch_wavevector.png
 │   ├── p07_photonic_band_structure.png
+│   ├── p08_cell_number_gap_suppression.png
+│   ├── p08_cell_number_transmission.png
+│   ├── p08_fill_fraction_gap_edges.png
+│   ├── p08_fill_fraction_gap_width.png
+│   ├── p08_fill_fraction_relative_gap_width.png
+│   ├── p08_fill_fraction_transmission.png
+│   ├── p08_index_contrast_gap_edges.png
+│   ├── p08_index_contrast_gap_width.png
+│   ├── p08_index_contrast_relative_gap_width.png
+│   ├── p08_index_contrast_transmission.png
 │   └── p11_2d_dielectric_structure.png
 ├── docs/
 ├── requirements.txt
