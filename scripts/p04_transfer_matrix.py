@@ -13,6 +13,8 @@ Description:
 import numpy as np
 import matplotlib.pyplot as plt
 
+from utils.transmission_utils import transmission_spectrum
+
 # =============================================================================
 # Refractive indices
 # =============================================================================
@@ -46,250 +48,28 @@ n_incident = 1.0
 n_exit = 1.0
 
 
-# ============================================================================
-# Propagation matrix
-# ============================================================================
-
-def propagation_matrix(
-    refractive_index: float,
-    thickness: float,
-    normalized_frequency: float,
-) -> np.ndarray:
-    """
-    Construct a propagation matrix that maps the wave amplitudes
-    on the right side of a dielectric layer to those on the left side.
-
-    Parameters
-    ----------
-    refractive_index:
-        Refractive index of the dielectric layer.
-    thickness:
-        Thickness of the dielectric layer.
-    normalized_frequency:
-        Normalized frequency omega * a / (2 * pi * c).
-
-    Returns
-    -------
-    np.ndarray
-        The 2 x 2 propagation matrix.
-    """
-    phase = (
-        2.0
-        * np.pi
-        * normalized_frequency
-        * refractive_index
-        * thickness
-        / lattice_constant
-    )
-
-    return np.array(
-        [
-            [np.exp(-1j * phase), 0.0],
-            [0.0, np.exp(1j * phase)],
-        ],
-        dtype=complex,
-    )
-
-
-# ============================================================================
-# Interface matrix
-# ============================================================================
-
-def interface_matrix(
-    refractive_index_left: float,
-    refractive_index_right: float,
-) -> np.ndarray:
-    """
-    Construct an interface matrix that maps the wave amplitudes
-    on the right side of an interface to those on the left side.
-
-    Parameters
-    ----------
-    refractive_index_left:
-        Refractive index on the left side of the interface.
-    refractive_index_right:
-        Refractive index on the right side of the interface.
-
-    Returns
-    -------
-    np.ndarray
-        The 2 x 2 interface matrix.
-    """
-    ratio = refractive_index_right / refractive_index_left
-
-    return 0.5 * np.array(
-        [
-            [1.0 + ratio, 1.0 - ratio],
-            [1.0 - ratio, 1.0 + ratio],
-        ],
-        dtype=complex,
-    )
-
-
-# ============================================================================
-# Unit-cell matrix
-# ============================================================================
-
-def unit_cell_matrix(normalized_frequency: float) -> np.ndarray:
-    """
-    Construct the transfer matrix of one unit cell.
-
-    Parameters
-    ----------
-    normalized_frequency:
-        Normalized frequency omega * a / (2 * pi * c).
-
-    Returns
-    -------
-    np.ndarray
-        The 2 x 2 transfer matrix of one unit cell.
-    """
-    propagation_1 = propagation_matrix(
-        refractive_index=n_1,
-        thickness=d_1,
-        normalized_frequency=normalized_frequency,
-    )
-
-    propagation_2 = propagation_matrix(
-        refractive_index=n_2,
-        thickness=d_2,
-        normalized_frequency=normalized_frequency,
-    )
-
-    interface_12 = interface_matrix(
-        refractive_index_left=n_1,
-        refractive_index_right=n_2,
-    )
-
-    interface_21 = interface_matrix(
-        refractive_index_left=n_2,
-        refractive_index_right=n_1,
-    )
-
-    return (
-            propagation_1
-            @ interface_12
-            @ propagation_2
-            @ interface_21
-    )
-
-
-# ============================================================================
-# Crystal matrix
-# ============================================================================
-
-def crystal_matrix(normalized_frequency: float) -> np.ndarray:
-    """
-    Construct the transfer matrix of the complete finite crystal,
-    including the incident and exit interfaces.
-
-    Parameters
-    ----------
-    normalized_frequency:
-        Normalized frequency omega * a / (2 * pi * c).
-
-    Returns
-    -------
-    np.ndarray
-        The 2 x 2 transfer matrix of the complete crystal.
-    """
-    propagation_1 = propagation_matrix(
-        refractive_index=n_1,
-        thickness=d_1,
-        normalized_frequency=normalized_frequency,
-    )
-
-    propagation_2 = propagation_matrix(
-        refractive_index=n_2,
-        thickness=d_2,
-        normalized_frequency=normalized_frequency,
-    )
-
-    interface_incident_1 = interface_matrix(
-        refractive_index_left=n_incident,
-        refractive_index_right=n_1,
-    )
-
-    interface_12 = interface_matrix(
-        refractive_index_left=n_1,
-        refractive_index_right=n_2,
-    )
-
-    interface_21 = interface_matrix(
-        refractive_index_left=n_2,
-        refractive_index_right=n_1,
-    )
-
-    interface_2_exit = interface_matrix(
-        refractive_index_left=n_2,
-        refractive_index_right=n_exit,
-    )
-
-    total_matrix = interface_incident_1
-
-    for cell_index in range(number_of_cells):
-        total_matrix = (
-            total_matrix
-            @ propagation_1
-            @ interface_12
-            @ propagation_2
-        )
-
-        if cell_index < number_of_cells - 1:
-            total_matrix = total_matrix @ interface_21
-
-    total_matrix = total_matrix @ interface_2_exit
-
-    return total_matrix
-
-
-# ============================================================================
-# Transmission
-# ============================================================================
-
-def transmission(normalized_frequency: float) -> float:
-    """
-    Calculate the power transmission coefficient of the finite crystal.
-
-    Parameters
-    ----------
-    normalized_frequency:
-        Normalized frequency omega * a / (2 * pi * c).
-
-    Returns
-    -------
-    float
-        Power transmission coefficient.
-    """
-    total_matrix = crystal_matrix(normalized_frequency)
-
-    transmission_amplitude = 1.0 / total_matrix[0, 0]
-
-    return (
-        n_exit
-        / n_incident
-        * np.abs(transmission_amplitude) ** 2
-    )
-
-
 if __name__ == "__main__":
-# ============================================================================
-# Frequency range
-# ============================================================================
+    # =========================================================================
+    # Frequency range
+    # =========================================================================
 
     normalized_frequencies = np.linspace(0.0, 1.0, 2000)
 
-    transmissions = np.array(
-        [
-            transmission(frequency)
-            for frequency in normalized_frequencies
-        ]
+    transmissions = transmission_spectrum(
+        normalized_frequencies=normalized_frequencies,
+        n_1=n_1,
+        n_2=n_2,
+        d_1=d_1,
+        d_2=d_2,
+        lattice_constant=lattice_constant,
+        number_of_cells=number_of_cells,
+        n_incident=n_incident,
+        n_exit=n_exit,
     )
 
-
-# ============================================================================
-# Visualization
-# ============================================================================
+    # ============================================================================
+    # Visualization
+    # ============================================================================
 
     fig, ax = plt.subplots(figsize=(9, 5))
 
