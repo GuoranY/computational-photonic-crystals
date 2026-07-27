@@ -852,6 +852,85 @@ The physical mechanism can be summarized as
 \text{photonic band-gap opening}.
 ```
 
+### P10 — One-Dimensional Defect Mode
+
+Introduce a central defect layer into a finite one-dimensional photonic crystal
+and calculate the resulting transmission spectrum and spatial field profile.
+
+#### Parameters
+
+- Material A refractive index: $n_1 = 1.0$
+- Material B refractive index: $n_2 = 3.5$
+- Incident-medium refractive index: $n_{\mathrm{in}} = 1.0$
+- Exit-medium refractive index: $n_{\mathrm{out}} = 1.0$
+- Lattice constant: $a = 1.0$
+- Fill fraction: $0.5$
+- Number of Bragg-mirror cells on each side: $N = 6$
+- Defect refractive index: $n_{\mathrm{d}} = 1.0$
+- Defect thickness: $d_{\mathrm{d}} = a$
+
+#### Structure
+
+The perfect reference crystal is constructed as
+
+```math
+(AB)^{2N},
+```
+
+while the defect crystal has the symmetric structure
+
+```math
+(AB)^N D(BA)^N.
+```
+
+The central defect layer breaks the translational symmetry of the periodic
+crystal and introduces a localized electromagnetic mode inside the first
+photonic band gap.
+
+#### Model
+
+The field-state transfer matrix is used to propagate the electromagnetic state
+
+```math
+\begin{pmatrix} E \\ H \end{pmatrix}
+```
+
+through the complete multilayer structure.
+
+The transmission amplitude is obtained by matching the incident, reflected,
+and transmitted waves at the external boundaries. The power transmission is
+
+```math
+T = \frac{n_{\mathrm{out}}}{n_{\mathrm{in}}} |t|^2.
+```
+
+The transmission spectra of the perfect and defect crystals are compared over
+the same frequency range. The defect-mode frequency is identified as the
+maximum-transmission point located inside the first photonic band gap.
+
+At this resonant frequency, the electric field is reconstructed throughout the
+multilayer structure. The normalized field intensity is calculated as
+
+```math
+\frac{|E(x)|^2}
+{\max |E(x)|^2}.
+```
+
+#### Output
+
+<p align="center">
+  <img src="figures/p10_1d_defect_mode.png" width="750">
+</p>
+
+The perfect crystal strongly suppresses transmission inside the photonic band
+gap. Introducing the central defect produces a narrow transmission resonance
+within the gap.
+
+The corresponding electric-field intensity is concentrated near the defect
+layer and decays into the surrounding periodic Bragg mirrors. This spatial
+localization demonstrates the formation of a one-dimensional photonic-crystal
+defect cavity.
+
 ### P11 — Two-Dimensional Periodic Dielectric
 
 Construct and visualize a two-dimensional square lattice of dielectric rods
@@ -919,10 +998,16 @@ computational-photonic-crystals/
 │   ├── p07_photonic_band_structure.py
 │   ├── p08_band_gap_parameter_study.py
 │   ├── p09_band_edge_field_profiles.py
+│   ├── p10_1d_defect_mode.py
 │   └── p11_2d_dielectric_structure.py
 ├── utils/
-│   ├── transfer_matrix_utils.py
+│   ├── __init__.py
 │   ├── bloch_utils.py
+│   ├── defect_utils.py
+│   ├── field_profile_utils.py
+│   ├── field_transfer_utils.py
+│   ├── plotting_utils.py
+│   ├── transfer_matrix_utils.py
 │   └── transmission_utils.py
 ├── figures/
 │   ├── p01_periodic_dielectric.png
@@ -945,8 +1030,8 @@ computational-photonic-crystals/
 │   ├── p08_index_contrast_relative_gap_width.png
 │   ├── p08_index_contrast_transmission.png
 │   ├── p09_band_edge_field_profiles.png
+│   ├── p10_1d_defect_mode.png
 │   └── p11_2d_dielectric_structure.png
-├── docs/
 ├── requirements.txt
 ├── .gitignore
 └── README.md
@@ -958,14 +1043,18 @@ The project currently includes a detailed one-dimensional photonic-crystal
 model, covering periodic dielectric structures, Bloch waves, Bragg standing
 waves, transfer-matrix analysis, photonic band-gap identification, complex
 Bloch wavevectors, photonic band structures, parameter-dependent gap behavior,
-and band-edge electric-field profiles.
+band-edge electric-field profiles, and localized defect modes.
 
-The band-edge field calculations directly show that the lower- and
-upper-frequency modes are concentrated in different dielectric regions,
-providing a spatial explanation for photonic band-gap opening.
+The band-edge field calculations show that the lower- and upper-frequency modes
+are concentrated in different dielectric regions, providing a spatial
+explanation for photonic band-gap opening.
+
+The defect-mode calculations further demonstrate how breaking the periodicity
+with a central defect layer introduces a narrow transmission resonance inside
+the photonic band gap. The corresponding electric-field intensity is localized
+near the defect and decays into the surrounding Bragg mirrors.
 
 A preliminary two-dimensional square lattice of dielectric rods has also been
-constructed. The next one-dimensional module will introduce a defect layer and
-investigate localized defect modes inside the photonic band gap. Later modules
-will extend the project to reciprocal lattices, Brillouin zones,
-two-dimensional band structures, defect cavities, and waveguides.
+constructed. Future modules will extend the project to reciprocal lattices,
+Brillouin zones, two-dimensional band structures, defect cavities, and
+waveguides.

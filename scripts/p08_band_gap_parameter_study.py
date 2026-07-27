@@ -19,7 +19,6 @@ import numpy as np
 from utils.bloch_utils import find_band_gaps
 from utils.transmission_utils import transmission_spectrum
 
-
 # ============================================================================
 # Base structural parameters
 # ============================================================================

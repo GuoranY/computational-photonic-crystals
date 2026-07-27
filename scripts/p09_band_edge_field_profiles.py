@@ -25,18 +25,31 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-# ------------------------------------------------------------
-# Parameters
-# ------------------------------------------------------------
+from utils.bloch_utils import (
+    bisection_root,
+    field_band_edge_state,
+    field_bloch_trace,
+    find_band_gaps,
+)
 
-n1 = 1.0
-n2 = 3.5
+from utils.field_profile_utils import calculate_band_edge_field_profile
+
+from utils.plotting_utils import (
+    plot_field_intensity_with_index_profile,
+)
+
+# ============================================================================
+# Parameters
+# ============================================================================
+
+n_1 = 1.0
+n_2 = 3.5
 
 lattice_constant = 1.0
 fill_fraction = 0.5
 
-d1 = fill_fraction * lattice_constant
-d2 = (1.0 - fill_fraction) * lattice_constant
+d_1 = fill_fraction * lattice_constant
+d_2 = (1.0 - fill_fraction) * lattice_constant
 
 number_of_cells = 6
 points_per_layer = 200
@@ -45,518 +58,9 @@ minimum_frequency = 0.0
 maximum_frequency = 0.5
 number_of_frequencies = 5000
 
-
-# ------------------------------------------------------------
-# Layer transfer matrix
-# ------------------------------------------------------------
-
-def layer_matrix(
-    refractive_index: float,
-    thickness: float,
-    normalized_frequency: float
-) -> np.ndarray:
-    """
-    Construct the transfer matrix of a homogeneous dielectric layer.
-
-    The electromagnetic state is represented by
-
-        [E, H]^T
-
-    where E is the electric-field amplitude and H is the normalized
-    magnetic-field amplitude.
-
-    Parameters
-    ----------
-    refractive_index:
-        Refractive index of the layer.
-
-    thickness:
-        Thickness of the layer.
-
-    normalized_frequency:
-        Normalized frequency nu = omega a / (2 pi c).
-
-    Returns
-    -------
-    np.ndarray
-        The 2 x 2 layer transfer matrix.
-    """
-
-    phase = (
-        2.0
-        * np.pi
-        * refractive_index
-        * normalized_frequency
-        * thickness
-        / lattice_constant
-    )
-
-    matrix = np.array(
-        [
-            [
-                np.cos(phase),
-                1j * np.sin(phase) / refractive_index
-            ],
-            [
-                1j * refractive_index * np.sin(phase),
-                np.cos(phase)
-            ]
-        ],
-        dtype=complex
-    )
-
-    return matrix
-
-
-# ------------------------------------------------------------
-# Unit-cell transfer matrix
-# ------------------------------------------------------------
-
-def unit_cell_matrix(
-    normalized_frequency: float
-) -> np.ndarray:
-    """
-    Construct the transfer matrix of one unit cell.
-
-    Each unit cell contains:
-
-        material 1 followed by material 2.
-    """
-
-    material_1_matrix = layer_matrix(
-        refractive_index=n1,
-        thickness=d1,
-        normalized_frequency=normalized_frequency
-    )
-
-    material_2_matrix = layer_matrix(
-        refractive_index=n2,
-        thickness=d2,
-        normalized_frequency=normalized_frequency
-    )
-
-    return material_2_matrix @ material_1_matrix
-
-
-# ------------------------------------------------------------
-# Bloch trace function
-# ------------------------------------------------------------
-
-def bloch_trace(
-    normalized_frequency: float
-) -> float:
-    """
-    Evaluate
-
-        F(nu) = 1/2 Tr(M_cell).
-
-    Allowed bands satisfy |F| <= 1, whereas photonic band gaps
-    satisfy |F| > 1.
-    """
-
-    matrix = unit_cell_matrix(normalized_frequency)
-
-    return float(
-        np.real(
-            0.5 * np.trace(matrix)
-        )
-    )
-
-
-# ------------------------------------------------------------
-# Find a root using bisection
-# ------------------------------------------------------------
-
-def bisection_root(
-    function,
-    left_boundary: float,
-    right_boundary: float,
-    target_value: float,
-    tolerance: float = 1e-12,
-    maximum_iterations: int = 200
-) -> float:
-    """
-    Find a solution of
-
-        function(x) = target_value
-
-    within a specified interval using the bisection method.
-    """
-
-    left_value = (
-        function(left_boundary)
-        - target_value
-    )
-
-    right_value = (
-        function(right_boundary)
-        - target_value
-    )
-
-    if left_value * right_value > 0.0:
-        raise ValueError(
-            "The supplied interval does not bracket a root."
-        )
-
-    for _ in range(maximum_iterations):
-        midpoint = 0.5 * (
-            left_boundary
-            + right_boundary
-        )
-
-        midpoint_value = (
-            function(midpoint)
-            - target_value
-        )
-
-        if abs(midpoint_value) < tolerance:
-            return midpoint
-
-        if left_value * midpoint_value <= 0.0:
-            right_boundary = midpoint
-            right_value = midpoint_value
-        else:
-            left_boundary = midpoint
-            left_value = midpoint_value
-
-    return 0.5 * (
-        left_boundary
-        + right_boundary
-    )
-
-
-# ------------------------------------------------------------
-# Locate the first photonic band gap
-# ------------------------------------------------------------
-
-def find_first_band_gap(
-    frequencies: np.ndarray,
-    trace_values: np.ndarray
-) -> tuple[float, float]:
-    """
-    Locate the lower and upper edges of the first photonic band gap.
-
-    The first gap is identified as the first continuous frequency
-    interval satisfying
-
-        |F(nu)| > 1.
-    """
-
-    gap_mask = np.abs(trace_values) > 1.0
-
-    transitions = np.where(
-        np.diff(gap_mask.astype(int)) != 0
-    )[0]
-
-    if len(transitions) < 2:
-        raise RuntimeError(
-            "No complete photonic band gap was found in the "
-            "selected frequency range."
-        )
-
-    lower_transition = transitions[0]
-    upper_transition = transitions[1]
-
-    lower_left = frequencies[lower_transition]
-    lower_right = frequencies[lower_transition + 1]
-
-    upper_left = frequencies[upper_transition]
-    upper_right = frequencies[upper_transition + 1]
-
-    lower_target = np.sign(
-        trace_values[lower_transition + 1]
-    )
-
-    upper_target = np.sign(
-        trace_values[upper_transition]
-    )
-
-    lower_edge = bisection_root(
-        function=bloch_trace,
-        left_boundary=lower_left,
-        right_boundary=lower_right,
-        target_value=lower_target
-    )
-
-    upper_edge = bisection_root(
-        function=bloch_trace,
-        left_boundary=upper_left,
-        right_boundary=upper_right,
-        target_value=upper_target
-    )
-
-    return lower_edge, upper_edge
-
-
-# ------------------------------------------------------------
-# Obtain the band-edge Bloch state
-# ------------------------------------------------------------
-
-def band_edge_state(
-    normalized_frequency: float
-) -> np.ndarray:
-    """
-    Calculate the electromagnetic state at a band edge.
-
-    At a band edge, the Bloch eigenvalue is either +1 or -1:
-
-        M_cell v = lambda v.
-
-    The state vector v is found from the approximate null space of
-
-        M_cell - lambda I.
-    """
-
-    matrix = unit_cell_matrix(normalized_frequency)
-
-    trace_value = bloch_trace(
-        normalized_frequency
-    )
-
-    bloch_eigenvalue = (
-        1.0
-        if trace_value >= 0.0
-        else -1.0
-    )
-
-    shifted_matrix = (
-        matrix
-        - bloch_eigenvalue * np.eye(2)
-    )
-
-    _, _, conjugate_transpose = np.linalg.svd(
-        shifted_matrix
-    )
-
-    state = conjugate_transpose.conj().T[:, -1]
-
-    # Remove an arbitrary global complex phase.
-    if abs(state[0]) > 1e-14:
-        state *= np.exp(
-            -1j * np.angle(state[0])
-        )
-
-    state /= np.linalg.norm(state)
-
-    return state
-
-
-# ------------------------------------------------------------
-# Field inside one dielectric layer
-# ------------------------------------------------------------
-
-def field_inside_layer(
-    initial_state: np.ndarray,
-    refractive_index: float,
-    thickness: float,
-    normalized_frequency: float,
-    number_of_points: int
-) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Reconstruct the electric field inside one homogeneous layer.
-
-    The field is written as
-
-        E(x) = E_plus exp(i q x)
-             + E_minus exp(-i q x).
-    """
-
-    initial_electric_field = initial_state[0]
-    initial_magnetic_field = initial_state[1]
-
-    forward_amplitude = 0.5 * (
-        initial_electric_field
-        + initial_magnetic_field / refractive_index
-    )
-
-    backward_amplitude = 0.5 * (
-        initial_electric_field
-        - initial_magnetic_field / refractive_index
-    )
-
-    local_positions = np.linspace(
-        0.0,
-        thickness,
-        number_of_points,
-        endpoint=False
-    )
-
-    wave_number = (
-        2.0
-        * np.pi
-        * refractive_index
-        * normalized_frequency
-        / lattice_constant
-    )
-
-    electric_field = (
-        forward_amplitude
-        * np.exp(
-            1j * wave_number * local_positions
-        )
-        + backward_amplitude
-        * np.exp(
-            -1j * wave_number * local_positions
-        )
-    )
-
-    return local_positions, electric_field
-
-
-# ------------------------------------------------------------
-# Reconstruct the field over several unit cells
-# ------------------------------------------------------------
-
-def calculate_field_profile(
-    normalized_frequency: float
-) -> tuple[
-    np.ndarray,
-    np.ndarray,
-    np.ndarray,
-    np.ndarray
-]:
-    """
-    Calculate the band-edge field profile across several unit cells.
-
-    Returns
-    -------
-    positions:
-        Spatial coordinates.
-
-    electric_field:
-        Complex electric-field values.
-
-    refractive_index_profile:
-        Refractive index at each position.
-
-    material_labels:
-        Integer labels identifying the two materials.
-    """
-
-    current_state = band_edge_state(
-        normalized_frequency
-    )
-
-    position_segments = []
-    field_segments = []
-    index_segments = []
-    label_segments = []
-
-    current_position = 0.0
-
-    for _ in range(number_of_cells):
-
-        # Material 1
-        local_positions, electric_field = (
-            field_inside_layer(
-                initial_state=current_state,
-                refractive_index=n1,
-                thickness=d1,
-                normalized_frequency=normalized_frequency,
-                number_of_points=points_per_layer
-            )
-        )
-
-        position_segments.append(
-            current_position + local_positions
-        )
-
-        field_segments.append(electric_field)
-
-        index_segments.append(
-            np.full(
-                local_positions.shape,
-                n1
-            )
-        )
-
-        label_segments.append(
-            np.zeros(
-                local_positions.shape,
-                dtype=int
-            )
-        )
-
-        current_state = (
-            layer_matrix(
-                refractive_index=n1,
-                thickness=d1,
-                normalized_frequency=normalized_frequency
-            )
-            @ current_state
-        )
-
-        current_position += d1
-
-        # Material 2
-        local_positions, electric_field = (
-            field_inside_layer(
-                initial_state=current_state,
-                refractive_index=n2,
-                thickness=d2,
-                normalized_frequency=normalized_frequency,
-                number_of_points=points_per_layer
-            )
-        )
-
-        position_segments.append(
-            current_position + local_positions
-        )
-
-        field_segments.append(electric_field)
-
-        index_segments.append(
-            np.full(
-                local_positions.shape,
-                n2
-            )
-        )
-
-        label_segments.append(
-            np.ones(
-                local_positions.shape,
-                dtype=int
-            )
-        )
-
-        current_state = (
-            layer_matrix(
-                refractive_index=n2,
-                thickness=d2,
-                normalized_frequency=normalized_frequency
-            )
-            @ current_state
-        )
-
-        current_position += d2
-
-    positions = np.concatenate(
-        position_segments
-    )
-
-    electric_field = np.concatenate(
-        field_segments
-    )
-
-    refractive_index_profile = np.concatenate(
-        index_segments
-    )
-
-    material_labels = np.concatenate(
-        label_segments
-    )
-
-    return (
-        positions,
-        electric_field,
-        refractive_index_profile,
-        material_labels
-    )
-
-
-# ------------------------------------------------------------
+# ============================================================================
 # Frequency scan
-# ------------------------------------------------------------
+# ============================================================================
 
 frequencies = np.linspace(
     minimum_frequency,
@@ -566,35 +70,106 @@ frequencies = np.linspace(
 
 trace_values = np.array(
     [
-        bloch_trace(frequency)
+        field_bloch_trace(
+            normalized_frequency=frequency,
+            n_1=n_1,
+            d_1=d_1,
+            n_2=n_2,
+            d_2=d_2,
+            lattice_constant=lattice_constant
+        )
         for frequency in frequencies
     ]
 )
 
-
-# ------------------------------------------------------------
+# ============================================================================
 # Find the first gap edges
-# ------------------------------------------------------------
+# ============================================================================
 
-lower_edge_frequency, upper_edge_frequency = (
-    find_first_band_gap(
-        frequencies=frequencies,
-        trace_values=trace_values
-    )
+band_gaps = find_band_gaps(
+    normalized_frequencies=frequencies,
+    n_1=n_1,
+    n_2=n_2,
+    d_1=d_1,
+    d_2=d_2,
+    lattice_constant=lattice_constant
 )
 
+if len(band_gaps) == 0:
+    raise RuntimeError(
+        "No photonic band gap was found."
+    )
 
-# ------------------------------------------------------------
+approximate_lower_edge, approximate_upper_edge = band_gaps[0]
+
+frequency_step = frequencies[1] - frequencies[0]
+
+trace_function = lambda frequency: field_bloch_trace(
+    normalized_frequency=frequency,
+    n_1=n_1,
+    d_1=d_1,
+    n_2=n_2,
+    d_2=d_2,
+    lattice_constant=lattice_constant,
+)
+
+lower_edge_frequency = bisection_root(
+    function=trace_function,
+    left_boundary=(
+        approximate_lower_edge
+        - frequency_step
+    ),
+    right_boundary=approximate_lower_edge,
+    target_value=-1.0,
+)
+
+upper_edge_frequency = bisection_root(
+    function=trace_function,
+    left_boundary=approximate_upper_edge,
+    right_boundary=(
+        approximate_upper_edge
+        + frequency_step
+    ),
+    target_value=-1.0,
+)
+
+# ============================================================================
 # Calculate the two band-edge field profiles
-# ------------------------------------------------------------
+# ============================================================================
+
+lower_initial_state = field_band_edge_state(
+    normalized_frequency=lower_edge_frequency,
+    n_1=n_1,
+    d_1=d_1,
+    n_2=n_2,
+    d_2=d_2,
+    lattice_constant=lattice_constant
+)
+
+upper_initial_state = field_band_edge_state(
+    normalized_frequency=upper_edge_frequency,
+    n_1=n_1,
+    d_1=d_1,
+    n_2=n_2,
+    d_2=d_2,
+    lattice_constant=lattice_constant
+)
 
 (
     lower_positions,
     lower_field,
     lower_index_profile,
     lower_material_labels
-) = calculate_field_profile(
-    normalized_frequency=lower_edge_frequency
+) = calculate_band_edge_field_profile(
+    normalized_frequency=lower_edge_frequency,
+    initial_state=lower_initial_state,
+    n_1=n_1,
+    d_1=d_1,
+    n_2=n_2,
+    d_2=d_2,
+    number_of_cells=number_of_cells,
+    lattice_constant=lattice_constant,
+    points_per_layer=points_per_layer
 )
 
 (
@@ -602,14 +177,21 @@ lower_edge_frequency, upper_edge_frequency = (
     upper_field,
     upper_index_profile,
     upper_material_labels
-) = calculate_field_profile(
-    normalized_frequency=upper_edge_frequency
+) = calculate_band_edge_field_profile(
+    normalized_frequency=upper_edge_frequency,
+    initial_state=upper_initial_state,
+    n_1=n_1,
+    d_1=d_1,
+    n_2=n_2,
+    d_2=d_2,
+    number_of_cells=number_of_cells,
+    lattice_constant=lattice_constant,
+    points_per_layer=points_per_layer
 )
 
-
-# ------------------------------------------------------------
+# ============================================================================
 # Normalize the field intensities
-# ------------------------------------------------------------
+# ============================================================================
 
 lower_intensity = np.abs(lower_field) ** 2
 upper_intensity = np.abs(upper_field) ** 2
@@ -617,10 +199,9 @@ upper_intensity = np.abs(upper_field) ** 2
 lower_intensity /= np.max(lower_intensity)
 upper_intensity /= np.max(upper_intensity)
 
-
-# ------------------------------------------------------------
+# ============================================================================
 # Compare field localization
-# ------------------------------------------------------------
+# ============================================================================
 
 lower_intensity_in_material_1 = np.mean(
     lower_intensity[
@@ -668,12 +249,12 @@ print(
 )
 
 print(
-    f"Mean intensity in n = {n1:.1f} region: "
+    f"Mean intensity in n = {n_1:.1f} region: "
     f"{lower_intensity_in_material_1:.6f}"
 )
 
 print(
-    f"Mean intensity in n = {n2:.1f} region: "
+    f"Mean intensity in n = {n_2:.1f} region: "
     f"{lower_intensity_in_material_2:.6f}"
 )
 
@@ -684,95 +265,18 @@ print(
 )
 
 print(
-    f"Mean intensity in n = {n1:.1f} region: "
+    f"Mean intensity in n = {n_1:.1f} region: "
     f"{upper_intensity_in_material_1:.6f}"
 )
 
 print(
-    f"Mean intensity in n = {n2:.1f} region: "
+    f"Mean intensity in n = {n_2:.1f} region: "
     f"{upper_intensity_in_material_2:.6f}"
 )
 
-
-# ------------------------------------------------------------
-# Plotting function for the spatial field profiles
-# ------------------------------------------------------------
-
-def plot_field_profile(
-    axis,
-    positions: np.ndarray,
-    intensity: np.ndarray,
-    refractive_index_profile: np.ndarray,
-    frequency: float,
-    title: str
-) -> None:
-    """
-    Plot a normalized electric-field intensity profile together
-    with the refractive-index distribution.
-    """
-
-    axis.plot(
-        positions,
-        intensity,
-        linewidth=2.0,
-        label=r"Normalized $|E(x)|^2$"
-    )
-
-    axis.set_ylabel(
-        r"Normalized $|E(x)|^2$"
-    )
-
-    axis.set_ylim(
-        0.0,
-        1.12
-    )
-
-    axis.grid(alpha=0.25)
-
-    index_axis = axis.twinx()
-
-    index_axis.step(
-        positions,
-        refractive_index_profile,
-        where="post",
-        linewidth=1.2,
-        alpha=0.55,
-        label=r"$n(x)$"
-    )
-
-    index_axis.set_ylabel(
-        r"Refractive index $n(x)$"
-    )
-
-    index_axis.set_ylim(
-        0.0,
-        1.25 * n2
-    )
-
-    axis.set_title(
-        title
-        + "\n"
-        + rf"$\nu = {frequency:.6f}$"
-    )
-
-    field_lines, field_labels = (
-        axis.get_legend_handles_labels()
-    )
-
-    index_lines, index_labels = (
-        index_axis.get_legend_handles_labels()
-    )
-
-    axis.legend(
-        field_lines + index_lines,
-        field_labels + index_labels,
-        loc="upper right"
-    )
-
-
-# ------------------------------------------------------------
+# ============================================================================
 # Create figure
-# ------------------------------------------------------------
+# ============================================================================
 
 fig, axes = plt.subplots(
     nrows=3,
@@ -780,10 +284,9 @@ fig, axes = plt.subplots(
     figsize=(12, 11)
 )
 
-
-# ------------------------------------------------------------
+# ============================================================================
 # Top panel: gap opening in frequency space
-# ------------------------------------------------------------
+# ============================================================================
 
 axes[0].plot(
     frequencies,
@@ -840,12 +343,11 @@ axes[0].set_ylabel(
 axes[0].grid(alpha=0.25)
 axes[0].legend()
 
-
-# ------------------------------------------------------------
+# ============================================================================
 # Middle panel: lower-frequency band-edge mode
-# ------------------------------------------------------------
+# ============================================================================
 
-plot_field_profile(
+plot_field_intensity_with_index_profile(
     axis=axes[1],
     positions=lower_positions,
     intensity=lower_intensity,
@@ -854,15 +356,15 @@ plot_field_profile(
     title=(
         "Lower Band-Edge Mode: "
         "Field Concentrated in the High-Index Regions"
-    )
+    ),
+    maximum_refractive_index=max(n_1, n_2)
 )
 
-
-# ------------------------------------------------------------
+# ============================================================================
 # Bottom panel: upper-frequency band-edge mode
-# ------------------------------------------------------------
+# ============================================================================
 
-plot_field_profile(
+plot_field_intensity_with_index_profile(
     axis=axes[2],
     positions=upper_positions,
     intensity=upper_intensity,
@@ -871,17 +373,13 @@ plot_field_profile(
     title=(
         "Upper Band-Edge Mode: "
         "Field Concentrated in the Low-Index Regions"
-    )
+    ),
+    maximum_refractive_index=max(n_1, n_2)
 )
 
-axes[2].set_xlabel(
-    r"Position $x/a$"
-)
-
-
-# ------------------------------------------------------------
+# ============================================================================
 # Figure formatting and output
-# ------------------------------------------------------------
+# ============================================================================
 
 fig.suptitle(
     "Band-Edge Field Profiles and Photonic Band-Gap Opening",
@@ -889,7 +387,7 @@ fig.suptitle(
 )
 
 fig.tight_layout(
-    rect=[0.0, 0.0, 1.0, 0.97]
+    rect=(0.0, 0.0, 1.0, 0.97)
 )
 
 

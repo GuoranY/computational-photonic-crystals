@@ -4,7 +4,6 @@ Transfer-matrix utilities for one-dimensional photonic crystals.
 
 import numpy as np
 
-
 # ============================================================================
 # Propagation matrix
 # ============================================================================

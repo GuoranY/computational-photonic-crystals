@@ -9,6 +9,8 @@ from utils.transfer_matrix_utils import (
     propagation_matrix,
 )
 
+from utils.field_transfer_utils import field_total_transfer_matrix
+
 
 # ============================================================================
 # Finite-crystal matrix
@@ -167,3 +169,124 @@ def transmission_spectrum(
         )
 
     return transmissions
+
+
+# ============================================================================
+# Reflection and transmission amplitudes
+# ============================================================================
+
+def scattering_amplitudes(
+    layers: list[tuple[float, float]],
+    normalized_frequency: float,
+    lattice_constant: float,
+    incident_index: float,
+    exit_index: float
+) -> tuple[complex, complex]:
+    """
+    Calculate the reflection and transmission amplitudes.
+
+    At the left boundary,
+
+        E = 1 + r,
+        H = n_incident (1 - r).
+
+    At the right boundary,
+
+        E = t,
+        H = n_exit t.
+    """
+
+    if incident_index <= 0.0:
+        raise ValueError(
+            "incident_index must be positive."
+        )
+
+    if exit_index <= 0.0:
+        raise ValueError(
+            "exit_index must be positive."
+        )
+
+    matrix = field_total_transfer_matrix(
+        layers=layers,
+        normalized_frequency=normalized_frequency,
+        lattice_constant=lattice_constant
+    )
+
+    incident_state = np.array(
+        [
+            1.0,
+            incident_index
+        ],
+        dtype=complex
+    )
+
+    reflected_basis = np.array(
+        [
+            1.0,
+            -incident_index
+        ],
+        dtype=complex
+    )
+
+    transmitted_basis = np.array(
+        [
+            1.0,
+            exit_index
+        ],
+        dtype=complex
+    )
+
+    coefficient_matrix = np.column_stack(
+        (
+            matrix @ reflected_basis,
+            -transmitted_basis
+        )
+    )
+
+    right_hand_side = (
+        -matrix @ incident_state
+    )
+
+    reflection_amplitude, transmission_amplitude = (
+        np.linalg.solve(
+            coefficient_matrix,
+            right_hand_side
+        )
+    )
+
+    return (
+        reflection_amplitude,
+        transmission_amplitude
+    )
+
+
+# ============================================================================
+# Power transmission
+# ============================================================================
+
+def transmission(
+    layers: list[tuple[float, float]],
+    normalized_frequency: float,
+    lattice_constant: float,
+    incident_index: float,
+    exit_index: float
+) -> float:
+    """
+    Calculate the power transmission coefficient.
+    """
+
+    _, transmission_amplitude = scattering_amplitudes(
+        layers=layers,
+        normalized_frequency=normalized_frequency,
+        lattice_constant=lattice_constant,
+        incident_index=incident_index,
+        exit_index=exit_index
+    )
+
+    return float(
+        (
+            exit_index
+            / incident_index
+        )
+        * abs(transmission_amplitude) ** 2
+    )

@@ -165,7 +165,7 @@ fig.suptitle(
     y=0.975,
 )
 
-plt.tight_layout(rect=[0, 0, 1, 0.98])
+plt.tight_layout(rect=(0, 0, 1, 0.98))
 
 plt.savefig(
     "../figures/p03_bragg_standing_waves.png",
