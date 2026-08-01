@@ -1089,6 +1089,135 @@ This reciprocal-space construction provides the geometric foundation for
 generating discrete wavevector paths and calculating two-dimensional photonic
 band structures using the plane-wave expansion method.
 
+### P13 — Fourier Coefficients of the Dielectric Functions
+
+Calculate and visualize the reciprocal-space Fourier coefficients of the
+dielectric function and inverse dielectric function for a two-dimensional
+square lattice of circular dielectric rods.
+
+#### Parameters
+
+- Background refractive index: $n_{\mathrm{bg}} = 1.0$
+- Rod refractive index: $n_{\mathrm{rod}} = 3.5$
+- Lattice constant: $a = 1.0$
+- Rod radius: $r = 0.2a$
+- Reciprocal-lattice index limit: $-5 \leq m,n \leq 5$
+
+#### Model
+
+The dielectric structure consists of circular dielectric rods embedded in a
+uniform background. The corresponding permittivities are
+
+```math
+\varepsilon_{\mathrm{rod}} = n_{\mathrm{rod}}^2,
+\qquad
+\varepsilon_{\mathrm{bg}} = n_{\mathrm{bg}}^2.
+```
+
+The dielectric function is expanded in reciprocal space as
+
+```math
+\varepsilon(\mathbf r)
+=
+\sum_{\mathbf G}
+\varepsilon_{\mathbf G}
+e^{i\mathbf G\cdot\mathbf r},
+```
+
+where the Fourier coefficients are
+
+```math
+\varepsilon_{\mathbf G}
+=
+\frac{1}{A_{\mathrm{cell}}}
+\int_{\mathrm{cell}}
+\varepsilon(\mathbf r)
+e^{-i\mathbf G\cdot\mathbf r}
+\,d^2r.
+```
+
+For circular rods centered in the unit cell, the nonzero reciprocal-space
+coefficients are determined analytically using the circular form factor
+
+```math
+\frac{2J_1(|\mathbf G|r)}{|\mathbf G|r},
+```
+
+where $J_1$ is the first-order Bessel function of the first kind.
+
+The same procedure is also applied to the inverse dielectric function,
+
+```math
+\eta(\mathbf r) = \frac{1}{\varepsilon(\mathbf r)},
+```
+
+to obtain the coefficients
+
+```math
+\eta_{\mathbf G} = \left(\frac{1}{\varepsilon}\right)_{\mathbf G}.
+```
+
+These inverse-dielectric coefficients are required when constructing the
+plane-wave expansion matrices for two-dimensional photonic crystals.
+
+#### Zero-Order Coefficients
+
+The filling fraction of the dielectric rods is
+
+```math
+f = \frac{\pi r^2}{a^2} = 0.125664.
+```
+
+The calculated zero-order coefficients are
+
+```math
+\varepsilon_{\mathbf 0}
+=
+(1-f)\varepsilon_{\mathrm{bg}}
++
+f\varepsilon_{\mathrm{rod}}
+=
+2.413717,
+```
+
+and
+
+```math
+\left(\frac{1}{\varepsilon}\right)_{\mathbf 0}
+=
+\frac{1-f}{\varepsilon_{\mathrm{bg}}}
++
+\frac{f}{\varepsilon_{\mathrm{rod}}}
+=
+0.884595.
+```
+
+The zero-order inverse-dielectric coefficient is generally not equal to the
+inverse of the zero-order dielectric coefficient:
+
+```math
+\left(\frac{1}{\varepsilon}\right)_{\mathbf 0}
+\neq
+\frac{1}{\varepsilon_{\mathbf 0}}.
+```
+
+#### Output
+
+<p align="center">
+  <img src="figures/p13_fourier_coefficients.png" width="850">
+</p>
+
+The left panel shows the Fourier coefficients
+$\varepsilon_{\mathbf G}$, while the right panel shows the coefficients
+$(1/\varepsilon)_{\mathbf G}$. The coefficients are largest near
+$\mathbf G=\mathbf 0$ and generally decrease in magnitude for larger
+reciprocal-lattice vectors.
+
+The approximately radial coefficient pattern reflects the circular symmetry
+of the dielectric rods. These coefficients provide the reciprocal-space
+material representation used in the subsequent plane-wave expansion
+calculation.
+
 ## Project Structure
 
 ```text
@@ -1105,17 +1234,19 @@ computational-photonic-crystals/
 │   ├── p09_band_edge_field_profiles.py
 │   ├── p10_1d_defect_mode.py
 │   ├── p11_2d_dielectric_structure.py
-│   └── p12_reciprocal_lattice_brillouin_zone.py
+│   ├── p12_reciprocal_lattice_brillouin_zone.py
+│   └── p13_fourier_coefficients.py
 ├── utils/
 │   ├── __init__.py
 │   ├── bloch_utils.py
 │   ├── defect_utils.py
 │   ├── field_profile_utils.py
 │   ├── field_transfer_utils.py
-│   ├── plotting_utils.py
 │   ├── transfer_matrix_utils.py
-│   ├──transmission_utils.py
-│   └── reciprocal_lattice_utils.py
+│   ├── transmission_utils.py
+│   ├── reciprocal_lattice_utils.py
+│   ├── fourier_utils.py
+│   └── plotting_utils.py
 ├── figures/
 │   ├── p01_periodic_dielectric.png
 │   ├── p02_bloch_wave_visualization.png
@@ -1139,7 +1270,8 @@ computational-photonic-crystals/
 │   ├── p09_band_edge_field_profiles.png
 │   ├── p10_1d_defect_mode.png
 │   ├── p11_2d_dielectric_structure.png
-│   └── p12_reciprocal_lattice_brillouin_zone.png
+│   ├── p12_reciprocal_lattice_brillouin_zone.png
+│   └── p13_fourier_coefficients.png
 ├── requirements.txt
 ├── .gitignore
 └── README.md
@@ -1162,7 +1294,14 @@ with a central defect layer introduces a narrow transmission resonance inside
 the photonic band gap. The corresponding electric-field intensity is localized
 near the defect and decays into the surrounding Bragg mirrors.
 
-A preliminary two-dimensional square lattice of dielectric rods has also been
-constructed. Future modules will extend the project to reciprocal lattices,
-Brillouin zones, two-dimensional band structures, defect cavities, and
-waveguides.
+The two-dimensional part currently includes a square lattice of dielectric rods,
+its reciprocal lattice, the first Brillouin zone, the standard
+$\Gamma\rightarrow X\rightarrow M\rightarrow\Gamma$ high-symmetry path, and
+the reciprocal-space Fourier coefficients of both the dielectric function and
+inverse dielectric function.
+
+These components establish the geometric and material foundations required for
+the plane-wave expansion method. Subsequent modules will construct the
+two-dimensional Maxwell eigenvalue matrices, calculate TE and TM photonic band
+structures, study numerical convergence, and introduce two-dimensional defects
+and waveguides.

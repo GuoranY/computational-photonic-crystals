@@ -7,9 +7,6 @@ from matplotlib.axes import Axes
 from matplotlib.patches import Polygon
 import numpy as np
 
-# ============================================================================
-# Plotting function for the spatial field profiles
-# ============================================================================
 
 def plot_field_intensity_with_index_profile(
     axis: Axes,
@@ -362,3 +359,120 @@ def plot_first_brillouin_zone(
     axis.legend(
         loc="lower left"
     )
+
+
+def plot_fourier_coefficient_maps(
+    axes,
+    dielectric_coefficients: np.ndarray,
+    inverse_dielectric_coefficients: np.ndarray,
+    maximum_index: int
+) -> None:
+    """
+    Plot Fourier-coefficient maps for the dielectric function and
+    inverse dielectric function.
+
+    Parameters
+    ----------
+    axes:
+        Sequence containing two Matplotlib axes.
+
+    dielectric_coefficients:
+        Two-dimensional array containing epsilon_G.
+
+    inverse_dielectric_coefficients:
+        Two-dimensional array containing (1 / epsilon)_G.
+
+    maximum_index:
+        Maximum reciprocal-lattice index displayed in the maps.
+    """
+
+    extent = (
+        -maximum_index - 0.5,
+        maximum_index + 0.5,
+        -maximum_index - 0.5,
+        maximum_index + 0.5
+    )
+
+    dielectric_image = axes[0].imshow(
+        np.real(dielectric_coefficients),
+        origin="lower",
+        extent=extent,
+        interpolation="nearest"
+    )
+
+    axes[0].set_title(
+        r"Dielectric coefficients $\varepsilon_{\mathbf{G}}$"
+    )
+
+    axes[0].set_xlabel(
+        r"Reciprocal index $m$"
+    )
+
+    axes[0].set_ylabel(
+        r"Reciprocal index $n$"
+    )
+
+    axes[0].set_xticks(
+        np.arange(
+            -maximum_index,
+            maximum_index + 1
+        )
+    )
+
+    axes[0].set_yticks(
+        np.arange(
+            -maximum_index,
+            maximum_index + 1
+        )
+    )
+
+    axes[0].figure.colorbar(
+        dielectric_image,
+        ax=axes[0],
+        label=r"$\varepsilon_{\mathbf{G}}$"
+    )
+
+    inverse_dielectric_image = axes[1].imshow(
+        np.real(inverse_dielectric_coefficients),
+        origin="lower",
+        extent=extent,
+        interpolation="nearest"
+    )
+
+    axes[1].set_title(
+        r"Inverse-dielectric coefficients "
+        r"$(1/\varepsilon)_{\mathbf{G}}$"
+    )
+
+    axes[1].set_xlabel(
+        r"Reciprocal index $m$"
+    )
+
+    axes[1].set_ylabel(
+        r"Reciprocal index $n$"
+    )
+
+    axes[1].set_xticks(
+        np.arange(
+            -maximum_index,
+            maximum_index + 1
+        )
+    )
+
+    axes[1].set_yticks(
+        np.arange(
+            -maximum_index,
+            maximum_index + 1
+        )
+    )
+
+    axes[1].figure.colorbar(
+        inverse_dielectric_image,
+        ax=axes[1],
+        label=r"$(1/\varepsilon)_{\mathbf{G}}$"
+    )
+
+    for axis in axes:
+        axis.grid(
+            alpha=0.2
+        )
