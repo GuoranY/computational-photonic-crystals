@@ -984,6 +984,111 @@ The resulting structure serves as the real-space geometric foundation for
 two-dimensional reciprocal-lattice, Brillouin-zone, and photonic-band
 calculations.
 
+### P12 — Reciprocal Lattice and Brillouin Zone
+
+Construct and visualize the reciprocal lattice and first Brillouin zone of a
+two-dimensional square lattice.
+
+#### Parameters
+
+- Lattice constant: $a = 1.0$
+- Real-space lattice vectors:
+
+  ```math
+  \mathbf{a}_1 =
+  \begin{pmatrix}
+  a \\
+  0
+  \end{pmatrix},
+  \qquad
+  \mathbf{a}_2 =
+  \begin{pmatrix}
+  0 \\
+  a
+  \end{pmatrix}
+  ```
+
+- Reciprocal-lattice index range: $-2 \leq m,n \leq 2$
+
+#### Model
+
+The reciprocal-lattice basis vectors are calculated from the real-space lattice
+vectors using
+
+```math
+\mathbf{a}_i \cdot \mathbf{b}_j = 2\pi\delta_{ij}.
+```
+
+For the square lattice,
+
+```math
+\mathbf{b}_1 = \begin{pmatrix}2\pi/a \\0\end{pmatrix},
+\qquad\mathbf{b}_2 = \begin{pmatrix}0 \\2\pi/a\end{pmatrix}.
+```
+
+The reciprocal-lattice points are generated from
+
+```math
+\mathbf{G} = m\mathbf{b}_1 + n\mathbf{b}_2, \qquad m,n\in\mathbb{Z}.
+```
+
+The first Brillouin zone is the square region
+
+```math
+-\frac{\pi}{a}\leqk_x\leq\frac{\pi}{a},
+\qquad-\frac{\pi}{a}\leqk_y\leq\frac{\pi}{a}.
+```
+
+The standard high-symmetry points are
+
+```math
+\Gamma=(0,0),
+\qquad
+X=\left(\frac{\pi}{a},0\right),
+\qquad
+M=\left(\frac{\pi}{a},\frac{\pi}{a}\right).
+```
+
+The path
+
+```math
+\Gamma
+\rightarrow
+X
+\rightarrow
+M
+\rightarrow
+\Gamma
+```
+
+is displayed as the standard wavevector path used in subsequent
+two-dimensional photonic band-structure calculations.
+
+#### Implementation
+
+Reusable utilities are organized into separate modules:
+
+- `reciprocal_lattice_utils.py`
+  - calculates reciprocal-lattice basis vectors;
+  - generates reciprocal-lattice points;
+  - constructs the square first Brillouin zone;
+  - defines the $\Gamma$, $X$, and $M$ high-symmetry points.
+
+- `plotting_utils.py`
+  - visualizes the reciprocal lattice and reciprocal basis vectors;
+  - plots the first Brillouin zone and the
+    $\Gamma\rightarrow X\rightarrow M\rightarrow\Gamma$ path.
+
+#### Output
+
+<p align="center">
+  <img src="figures/p12_reciprocal_lattice_brillouin_zone.png" width="850">
+</p>
+
+This reciprocal-space construction provides the geometric foundation for
+generating discrete wavevector paths and calculating two-dimensional photonic
+band structures using the plane-wave expansion method.
+
 ## Project Structure
 
 ```text
@@ -999,7 +1104,8 @@ computational-photonic-crystals/
 │   ├── p08_band_gap_parameter_study.py
 │   ├── p09_band_edge_field_profiles.py
 │   ├── p10_1d_defect_mode.py
-│   └── p11_2d_dielectric_structure.py
+│   ├── p11_2d_dielectric_structure.py
+│   └── p12_reciprocal_lattice_brillouin_zone.py
 ├── utils/
 │   ├── __init__.py
 │   ├── bloch_utils.py
@@ -1008,7 +1114,8 @@ computational-photonic-crystals/
 │   ├── field_transfer_utils.py
 │   ├── plotting_utils.py
 │   ├── transfer_matrix_utils.py
-│   └── transmission_utils.py
+│   ├──transmission_utils.py
+│   └── reciprocal_lattice_utils.py
 ├── figures/
 │   ├── p01_periodic_dielectric.png
 │   ├── p02_bloch_wave_visualization.png
@@ -1031,7 +1138,8 @@ computational-photonic-crystals/
 │   ├── p08_index_contrast_transmission.png
 │   ├── p09_band_edge_field_profiles.png
 │   ├── p10_1d_defect_mode.png
-│   └── p11_2d_dielectric_structure.png
+│   ├── p11_2d_dielectric_structure.png
+│   └── p12_reciprocal_lattice_brillouin_zone.png
 ├── requirements.txt
 ├── .gitignore
 └── README.md
