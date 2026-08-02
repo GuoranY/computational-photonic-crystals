@@ -1035,8 +1035,9 @@ The reciprocal-lattice points are generated from
 The first Brillouin zone is the square region
 
 ```math
--\frac{\pi}{a}\leqk_x\leq\frac{\pi}{a},
-\qquad-\frac{\pi}{a}\leqk_y\leq\frac{\pi}{a}.
+-\frac{\pi}{a} \leqk_x \leq \frac{\pi}{a},
+\qquad
+-\frac{\pi}{a} \leqk_y \leq \frac{\pi}{a}.
 ```
 
 The standard high-symmetry points are
@@ -1218,6 +1219,234 @@ of the dielectric rods. These coefficients provide the reciprocal-space
 material representation used in the subsequent plane-wave expansion
 calculation.
 
+### P14 — Two-Dimensional TE and TM Band Structures
+
+Calculate and visualize the TE and TM photonic band structures of a
+two-dimensional square lattice of circular dielectric rods using the
+plane-wave expansion method.
+
+#### Parameters
+
+- Background refractive index: $n_{\mathrm{bg}} = 1.0$
+- Rod refractive index: $n_{\mathrm{rod}} = 3.5$
+- Background relative permittivity:
+
+```math
+\varepsilon_{\mathrm{bg}} = n_{\mathrm{bg}}^2 = 1.0
+```
+
+- Rod relative permittivity:
+
+```math
+\varepsilon_{\mathrm{rod}} = n_{\mathrm{rod}}^2 = 12.25
+```
+
+- Lattice constant: $a = 1.0$
+- Rod radius: $r = 0.2a$
+- Reciprocal-lattice index limit: $N = 3$
+- Number of plane waves:
+
+```math
+N_G = (2N+1)^2 = 49
+```
+
+- Wavevector path: $\Gamma \rightarrow X \rightarrow M \rightarrow \Gamma$
+- Number of sampled points per path segment: $30$
+- Number of plotted bands: $8$
+
+#### Plane-Wave Basis
+
+The electromagnetic fields are expanded in reciprocal-space plane waves
+labelled by reciprocal-lattice vectors
+
+```math
+\mathbf{G} = m\mathbf{b}_1 + n\mathbf{b}_2,
+```
+
+where
+
+```math
+-N \leq m,n \leq N.
+```
+
+For each Bloch wavevector $\mathbf{k}$, the field is represented using plane-wave
+components with wavevectors
+
+```math
+\mathbf{k}+\mathbf{G}.
+```
+
+The reciprocal-space basis is truncated to a finite set so that the Maxwell
+eigenvalue equations can be represented numerically as finite matrices.
+
+#### Dielectric Convolution Matrices
+
+The Fourier coefficients calculated in P13 are used to construct the material
+convolution matrices
+
+```math
+B_{\mathbf{G},\mathbf{G}'}
+=
+\varepsilon_{\mathbf{G}-\mathbf{G}'}
+```
+
+and
+
+```math
+\eta_{\mathbf{G},\mathbf{G}'}
+=
+\left(\frac{1}{\varepsilon}\right)_{\mathbf{G}-\mathbf{G}'}.
+```
+
+The dependence on $\mathbf{G}-\mathbf{G}'$ describes the coupling between
+different plane-wave components produced by the periodic dielectric structure.
+
+#### TE Polarization
+
+For TE polarization, the nonzero out-of-plane field component is $H_z$.
+
+The plane-wave eigenvalue equation is
+
+```math
+\sum_{\mathbf{G}'}
+(\mathbf{k}+\mathbf{G})
+\cdot
+(\mathbf{k}+\mathbf{G}')
+\left(\frac{1}{\varepsilon}\right)_{\mathbf{G}-\mathbf{G}'}
+H_{\mathbf{G}'}
+=
+\frac{\omega^2}{c^2}
+H_{\mathbf{G}}.
+```
+
+The TE matrix elements are therefore
+
+```math
+A^{\mathrm{TE}}_{\mathbf{G},\mathbf{G}'}
+=
+(\mathbf{k}+\mathbf{G})
+\cdot
+(\mathbf{k}+\mathbf{G}')
+\left(\frac{1}{\varepsilon}\right)_{\mathbf{G}-\mathbf{G}'}.
+```
+
+This produces the standard Hermitian eigenvalue problem
+
+```math
+A^{\mathrm{TE}}\mathbf{H}
+=
+\frac{\omega^2}{c^2}\mathbf{H}.
+```
+
+#### TM Polarization
+
+For TM polarization, the nonzero out-of-plane field component is $E_z$.
+
+The plane-wave equation is
+
+```math
+|\mathbf{k}+\mathbf{G}|^2 E_{\mathbf{G}}
+=
+\frac{\omega^2}{c^2}
+\sum_{\mathbf{G}'}
+\varepsilon_{\mathbf{G}-\mathbf{G}'}
+E_{\mathbf{G}'}.
+```
+
+This is written as the generalized eigenvalue problem
+
+```math
+A^{\mathrm{TM}}\mathbf{E}
+=
+\frac{\omega^2}{c^2}
+B^{\mathrm{TM}}\mathbf{E},
+```
+
+where
+
+```math
+A^{\mathrm{TM}}_{\mathbf{G},\mathbf{G}'}
+=
+|\mathbf{k}+\mathbf{G}|^2
+\delta_{\mathbf{G},\mathbf{G}'}
+```
+
+and
+
+```math
+B^{\mathrm{TM}}_{\mathbf{G},\mathbf{G}'}
+=
+\varepsilon_{\mathbf{G}-\mathbf{G}'}.
+```
+
+#### High-Symmetry Path
+
+The band structure is evaluated along the standard irreducible Brillouin-zone
+path for a square lattice:
+
+```math
+\Gamma \rightarrow X \rightarrow M \rightarrow \Gamma,
+```
+
+with
+
+```math
+\Gamma=(0,0),
+```
+
+```math
+X=\left(\frac{\pi}{a},0\right),
+```
+
+and
+
+```math
+M=\left(\frac{\pi}{a},\frac{\pi}{a}\right).
+```
+
+This path samples the boundary and diagonal directions of the first Brillouin
+zone while taking advantage of the rotational and reflection symmetries of the
+square lattice.
+
+#### Normalized Frequency
+
+The eigenvalues correspond to
+
+```math
+\lambda=\frac{\omega^2}{c^2}.
+```
+
+They are converted to the dimensionless normalized frequency
+
+```math
+\frac{\omega a}{2\pi c}.
+```
+
+Using normalized frequency makes the calculated band structure independent of
+the absolute physical scale of the lattice.
+
+#### Output
+
+<p align="center">
+  <img src="figures/p14_2d_te_tm_band_structure.png" width="900">
+</p>
+
+The left panel shows the TE bands associated with the $H_z$ field component,
+while the right panel shows the TM bands associated with the $E_z$ field
+component.
+
+The lowest band begins at zero frequency at the $\Gamma$ point, as expected for
+long-wavelength electromagnetic modes. The TE and TM band structures differ
+because their eigenvalue matrices depend differently on the dielectric function.
+
+Degenerate or nearly degenerate eigenfrequencies can appear at high-symmetry
+points because multiple electromagnetic modes may be related by the symmetry of
+the square lattice.
+
+This module combines the reciprocal-lattice construction from P12 and the
+dielectric Fourier coefficients from P13 to produce the first complete
+two-dimensional photonic-band calculation in the project.
+
 ## Project Structure
 
 ```text
@@ -1235,7 +1464,8 @@ computational-photonic-crystals/
 │   ├── p10_1d_defect_mode.py
 │   ├── p11_2d_dielectric_structure.py
 │   ├── p12_reciprocal_lattice_brillouin_zone.py
-│   └── p13_fourier_coefficients.py
+│   ├── p13_fourier_coefficients.py
+│   └── p14_2d_te_tm_band_structure.py
 ├── utils/
 │   ├── __init__.py
 │   ├── bloch_utils.py
@@ -1246,7 +1476,8 @@ computational-photonic-crystals/
 │   ├── transmission_utils.py
 │   ├── reciprocal_lattice_utils.py
 │   ├── fourier_utils.py
-│   └── plotting_utils.py
+│   ├── plotting_utils.py
+│   └── plane_wave_expansion_utils.py
 ├── figures/
 │   ├── p01_periodic_dielectric.png
 │   ├── p02_bloch_wave_visualization.png
@@ -1271,7 +1502,8 @@ computational-photonic-crystals/
 │   ├── p10_1d_defect_mode.png
 │   ├── p11_2d_dielectric_structure.png
 │   ├── p12_reciprocal_lattice_brillouin_zone.png
-│   └── p13_fourier_coefficients.png
+│   ├── p13_fourier_coefficients.png
+│   └── p14_2d_te_tm_band_structure.png
 ├── requirements.txt
 ├── .gitignore
 └── README.md
@@ -1279,29 +1511,62 @@ computational-photonic-crystals/
 
 ## Status
 
+## Status
+
 The project currently includes a detailed one-dimensional photonic-crystal
-model, covering periodic dielectric structures, Bloch waves, Bragg standing
-waves, transfer-matrix analysis, photonic band-gap identification, complex
-Bloch wavevectors, photonic band structures, parameter-dependent gap behavior,
-band-edge electric-field profiles, and localized defect modes.
+framework, covering periodic dielectric structures, Bloch waves, Bragg standing
+waves, transfer-matrix analysis, allowed and forbidden frequency bands, complex
+Bloch wavevectors, photonic band structures, parameter-dependent band-gap
+behavior, band-edge electric-field profiles, and localized defect modes.
+
+The one-dimensional calculations connect several complementary descriptions of
+photonic crystals. The transfer-matrix method describes propagation and
+transmission through finite multilayer structures, while Bloch analysis
+identifies the allowed bands and photonic band gaps of the corresponding
+infinite periodic system.
 
 The band-edge field calculations show that the lower- and upper-frequency modes
 are concentrated in different dielectric regions, providing a spatial
-explanation for photonic band-gap opening.
+explanation for the opening of the photonic band gap.
 
-The defect-mode calculations further demonstrate how breaking the periodicity
-with a central defect layer introduces a narrow transmission resonance inside
-the photonic band gap. The corresponding electric-field intensity is localized
-near the defect and decays into the surrounding Bragg mirrors.
+The defect-mode calculations further demonstrate how breaking translational
+symmetry with a central defect layer introduces a narrow transmission resonance
+inside the photonic band gap. The corresponding electric-field intensity is
+localized near the defect and decays into the surrounding Bragg mirrors.
 
-The two-dimensional part currently includes a square lattice of dielectric rods,
-its reciprocal lattice, the first Brillouin zone, the standard
-$\Gamma\rightarrow X\rightarrow M\rightarrow\Gamma$ high-symmetry path, and
-the reciprocal-space Fourier coefficients of both the dielectric function and
-inverse dielectric function.
+The two-dimensional part currently includes a square lattice of circular
+dielectric rods, its reciprocal lattice, the first Brillouin zone, the standard
 
-These components establish the geometric and material foundations required for
-the plane-wave expansion method. Subsequent modules will construct the
-two-dimensional Maxwell eigenvalue matrices, calculate TE and TM photonic band
-structures, study numerical convergence, and introduce two-dimensional defects
-and waveguides.
+```math
+\Gamma
+\rightarrow
+X
+\rightarrow
+M
+\rightarrow
+\Gamma
+```
+
+high-symmetry path, and the reciprocal-space Fourier coefficients of both the
+dielectric function and inverse dielectric function.
+
+Using these reciprocal-space quantities, the plane-wave expansion method has
+been implemented to construct and solve the two-dimensional Maxwell eigenvalue
+problems for both polarizations:
+
+```math
+\mathrm{TE}: H_z \neq 0,
+\qquad
+\mathrm{TM}: E_z \neq 0.
+```
+
+The resulting TE and TM photonic band structures are calculated along the
+high-symmetry path using a truncated reciprocal-lattice basis. This completes
+the first full two-dimensional photonic-band calculation in the project and
+connects the real-space dielectric geometry, reciprocal-lattice construction,
+material Fourier coefficients, and Maxwell eigenvalue formulation within a
+single numerical framework.
+
+Future modules may examine plane-wave convergence, identify complete and
+polarization-dependent band gaps, visualize two-dimensional eigenmodes, and
+introduce point defects and line-defect waveguides.
