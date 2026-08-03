@@ -1447,6 +1447,327 @@ This module combines the reciprocal-lattice construction from P12 and the
 dielectric Fourier coefficients from P13 to produce the first complete
 two-dimensional photonic-band calculation in the project.
 
+### P15 — Complete Photonic Band-Gap Search
+
+Analyze the calculated TE and TM photonic band structures and identify
+frequency intervals in which neither polarization supports a propagating mode.
+
+#### Parameters
+
+- Background refractive index: $n_{\mathrm{bg}} = 1.0$
+- Rod refractive index: $n_{\mathrm{rod}} = 3.5$
+- Lattice constant: $a = 1.0$
+- Rod radius: $r = 0.2a$
+- Reciprocal-lattice index limit: $N = 3$
+- Number of plane waves:
+
+```math
+N_G = (2N+1)^2 = 49
+```
+
+- Wavevector path:
+
+```math
+\Gamma
+\rightarrow
+X
+\rightarrow
+M
+\rightarrow
+\Gamma
+```
+
+- Number of sampled points per path segment: $30$
+- Number of calculated bands: $8$
+
+#### Band-Gap Identification
+
+For each polarization, a band gap between neighboring bands $n$ and $n+1$
+exists when the minimum frequency of the upper band lies above the maximum
+frequency of the lower band:
+
+```math
+\min_{\mathbf{k}}
+\omega_{n+1}(\mathbf{k})
+>
+\max_{\mathbf{k}}
+\omega_n(\mathbf{k}).
+```
+
+The lower and upper band-gap boundaries are therefore
+
+```math
+\omega_{\mathrm{lower}}
+=
+\max_{\mathbf{k}}
+\omega_n(\mathbf{k}),
+```
+
+and
+
+```math
+\omega_{\mathrm{upper}}
+=
+\min_{\mathbf{k}}
+\omega_{n+1}(\mathbf{k}).
+```
+
+The band-gap width is
+
+```math
+\Delta\omega
+=
+\omega_{\mathrm{upper}}
+-
+\omega_{\mathrm{lower}}.
+```
+
+The midgap frequency is
+
+```math
+\omega_{\mathrm{mid}}
+=
+\frac{
+\omega_{\mathrm{lower}}
++
+\omega_{\mathrm{upper}}
+}{2},
+```
+
+and the relative gap width is measured by the gap-to-midgap ratio
+
+```math
+\frac{\Delta\omega}{\omega_{\mathrm{mid}}}.
+```
+
+#### Complete Photonic Band Gap
+
+A complete photonic band gap must be forbidden for both TE and TM
+polarizations.
+
+If a TE gap occupies the interval
+
+```math
+[
+\omega_{\mathrm{TE,lower}},
+\omega_{\mathrm{TE,upper}}
+],
+```
+
+and a TM gap occupies
+
+```math
+[
+\omega_{\mathrm{TM,lower}},
+\omega_{\mathrm{TM,upper}}
+],
+```
+
+their common forbidden interval is
+
+```math
+\omega_{\mathrm{complete,lower}}
+=
+\max
+\left(
+\omega_{\mathrm{TE,lower}},
+\omega_{\mathrm{TM,lower}}
+\right),
+```
+
+```math
+\omega_{\mathrm{complete,upper}}
+=
+\min
+\left(
+\omega_{\mathrm{TE,upper}},
+\omega_{\mathrm{TM,upper}}
+\right).
+```
+
+A complete band gap exists only when
+
+```math
+\omega_{\mathrm{complete,upper}}
+>
+\omega_{\mathrm{complete,lower}}.
+```
+
+#### Calculated TE Band Gap
+
+For the selected structure, one TE band gap is detected between bands 4 and 5:
+
+```math
+0.913730
+<
+\frac{\omega a}{2\pi c}
+<
+0.918983.
+```
+
+Its width is
+
+```math
+\Delta\omega_{\mathrm{TE}}
+=
+0.005254,
+```
+
+with a midgap frequency of approximately
+
+```math
+\omega_{\mathrm{mid,TE}}
+=
+0.916357,
+```
+
+and a gap-to-midgap ratio of approximately
+
+```math
+0.573\%.
+```
+
+#### Calculated TM Band Gaps
+
+Three TM band gaps are detected.
+
+Between bands 1 and 2:
+
+```math
+0.278188
+<
+\frac{\omega a}{2\pi c}
+<
+0.415995,
+```
+
+with a gap width of
+
+```math
+0.137807
+```
+
+and a gap-to-midgap ratio of approximately
+
+```math
+39.703\%.
+```
+
+Between bands 4 and 5:
+
+```math
+0.712621
+<
+\frac{\omega a}{2\pi c}
+<
+0.745993,
+```
+
+with a gap width of
+
+```math
+0.033372
+```
+
+and a gap-to-midgap ratio of approximately
+
+```math
+4.576\%.
+```
+
+Between bands 6 and 7:
+
+```math
+0.879116
+<
+\frac{\omega a}{2\pi c}
+<
+0.910997,
+```
+
+with a gap width of
+
+```math
+0.031882
+```
+
+and a gap-to-midgap ratio of approximately
+
+```math
+3.562\%.
+```
+
+#### Complete-Gap Result
+
+No overlapping TE–TM band gap is found for the selected structure.
+
+The closest pair consists of the highest calculated TM gap,
+
+```math
+0.879116
+<
+\frac{\omega a}{2\pi c}
+<
+0.910997,
+```
+
+and the TE gap,
+
+```math
+0.913730
+<
+\frac{\omega a}{2\pi c}
+<
+0.918983.
+```
+
+These intervals are separated by
+
+```math
+0.913730 - 0.910997
+=
+0.002733,
+```
+
+so they do not form a complete photonic band gap.
+
+This result shows that the square lattice of dielectric rods supports several
+polarization-dependent band gaps, particularly a wide low-frequency TM gap,
+but does not produce a polarization-independent forbidden interval for the
+selected material and geometric parameters.
+
+#### Output
+
+<p align="center">
+  <img
+    src="figures/p15_complete_band_gap_search.png"
+    alt="Combined TE and TM photonic band structures and complete band-gap search"
+    width="850"
+  >
+</p>
+
+The dashed curves represent the TE bands and the solid curves represent the TM
+bands.
+
+Because no complete TE–TM band gap is found, no common forbidden-frequency
+region is shaded. The figure instead reports that the selected structure does
+not contain a complete photonic band gap along the sampled high-symmetry path.
+
+The search is performed over the calculated
+
+```math
+\Gamma
+\rightarrow
+X
+\rightarrow
+M
+\rightarrow
+\Gamma
+```
+
+path. A stricter verification over the entire irreducible Brillouin zone would
+require a two-dimensional wavevector-grid calculation.
+
 ## Project Structure
 
 ```text
@@ -1465,7 +1786,8 @@ computational-photonic-crystals/
 │   ├── p11_2d_dielectric_structure.py
 │   ├── p12_reciprocal_lattice_brillouin_zone.py
 │   ├── p13_fourier_coefficients.py
-│   └── p14_2d_te_tm_band_structure.py
+│   ├── p14_2d_te_tm_band_structure.py
+│   └── p15_complete_band_gap_search.py
 ├── utils/
 │   ├── __init__.py
 │   ├── bloch_utils.py
@@ -1477,7 +1799,8 @@ computational-photonic-crystals/
 │   ├── reciprocal_lattice_utils.py
 │   ├── fourier_utils.py
 │   ├── plotting_utils.py
-│   └── plane_wave_expansion_utils.py
+│   ├── plane_wave_expansion_utils.py
+│   └── band_gap_utils.py
 ├── figures/
 │   ├── p01_periodic_dielectric.png
 │   ├── p02_bloch_wave_visualization.png
@@ -1503,13 +1826,12 @@ computational-photonic-crystals/
 │   ├── p11_2d_dielectric_structure.png
 │   ├── p12_reciprocal_lattice_brillouin_zone.png
 │   ├── p13_fourier_coefficients.png
-│   └── p14_2d_te_tm_band_structure.png
+│   ├── p14_2d_te_tm_band_structure.png
+│   └── p15_complete_band_gap_search.png
 ├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
-
-## Status
 
 ## Status
 
@@ -1567,6 +1889,19 @@ connects the real-space dielectric geometry, reciprocal-lattice construction,
 material Fourier coefficients, and Maxwell eigenvalue formulation within a
 single numerical framework.
 
-Future modules may examine plane-wave convergence, identify complete and
-polarization-dependent band gaps, visualize two-dimensional eigenmodes, and
-introduce point defects and line-defect waveguides.
+The calculated TE and TM band structures are further analyzed to identify
+polarization-dependent and complete photonic band gaps. For the selected square
+lattice of dielectric rods, one narrow TE gap and three TM gaps are detected,
+but none of the TE and TM forbidden intervals overlap. The structure therefore
+does not exhibit a complete photonic band gap along the sampled
+$\Gamma\rightarrow X\rightarrow M\rightarrow\Gamma$ path.
+
+The two-dimensional framework now connects the real-space dielectric geometry,
+reciprocal-lattice construction, Brillouin-zone sampling, dielectric Fourier
+coefficients, plane-wave Maxwell eigenvalue problems, polarization-dependent
+band structures, and automated band-gap analysis.
+
+Future modules may examine plane-wave convergence, search systematically over
+rod radius and refractive-index contrast, verify gaps over the full irreducible
+Brillouin zone, visualize two-dimensional eigenmodes, and introduce point
+defects and line-defect waveguides.
