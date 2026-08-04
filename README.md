@@ -1005,19 +1005,19 @@ two-dimensional square lattice.
 - Lattice constant: $a = 1.0$
 - Real-space lattice vectors:
 
-  ```math
-  \mathbf{a}_1 =
-  \begin{pmatrix}
-  a \\
-  0
-  \end{pmatrix},
-  \qquad
-  \mathbf{a}_2 =
-  \begin{pmatrix}
-  0 \\
-  a
-  \end{pmatrix}
-  ```
+```math
+\mathbf{a}_1 =
+\begin{pmatrix}
+a \\
+0
+\end{pmatrix},
+\qquad
+\mathbf{a}_2 =
+\begin{pmatrix}
+0 \\
+a
+\end{pmatrix}
+```
 
 - Reciprocal-lattice index range: $-2 \leq m,n \leq 2$
 
@@ -1046,9 +1046,9 @@ The reciprocal-lattice points are generated from
 The first Brillouin zone is the square region
 
 ```math
--\frac{\pi}{a} \leqk_x \leq \frac{\pi}{a},
+-\frac{\pi}{a} \leq k_x \leq \frac{\pi}{a},
 \qquad
--\frac{\pi}{a} \leqk_y \leq \frac{\pi}{a}.
+-\frac{\pi}{a} \leq k_y \leq \frac{\pi}{a}.
 ```
 
 The standard high-symmetry points are
