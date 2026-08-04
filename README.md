@@ -1,2072 +1,587 @@
 # computational-photonic-crystals
 
 Develop numerical and visual models of one-dimensional and two-dimensional
-photonic crystals, progressing from Bragg scattering and Bloch waves to band
-structures, photonic band gaps, defect cavities, and waveguides.
-
-## Features
-
-- One-dimensional transfer-matrix modeling
-- Bloch-wave and band-structure calculations
-- Band-gap identification and parameter studies
-- Two-dimensional plane-wave expansion
-- TE and TM photonic band structures
-- Complete band-gap analysis
-- Point-defect supercell calculations
-- Localized cavity-mode reconstruction
-
-## Implemented Modules
-
-### P01 — One-Dimensional Periodic Dielectric
-
-Construct a one-dimensional periodic dielectric profile consisting of alternating
-materials with different refractive indices.
-
-#### Parameters
-
-- Material A refractive index: $n_1 = 1.0$
-- Material B refractive index: $n_2 = 3.5$
-- Lattice constant: $a = 1.0$
-- Number of unit cells: $10$
-- Fill fraction: $0.5$
-
-#### Model
-
-The refractive-index profile alternates periodically between two materials within
-each unit cell.
-
-#### Output
+photonic crystals, progressing from Bragg scattering and Bloch waves to
+photonic band structures, band-gap engineering, defect cavities, and
+line-defect waveguides.
 
 <p align="center">
   <img
-    src="figures/p01_periodic_dielectric.png"
-    alt="One-dimensional periodic dielectric refractive-index profile"
-    width="650"
-  >
-</p>
-
-This periodic refractive-index profile serves as the fundamental model for
-subsequent photonic-crystal simulations, including Bloch-wave propagation,
-band-structure calculations, and transfer-matrix analysis.
-
-### P02 — Bloch Wave Visualization
-
-Visualize the structure of a one-dimensional Bloch wave and compare its periodic
-part, plane-wave factor, and complete spatial form.
-
-#### Parameters
-
-- Lattice constant: $a = 1.0$
-- Number of unit cells: $8$
-- Wave vector: $k = 0.6\pi/a$
-- Periodic modulation amplitude: $A = 0.35$
-
-#### Model
-
-A Bloch wave is written as
-
-```math
-E_k(x) = u_k(x)e^{ikx},
-```
-
-where the periodic part satisfies
-
-```math
-u_k(x+a) = u_k(x).
-```
-
-For visualization, the periodic part is modeled as
-
-```math
-u_k(x) = 1 + A\cos(Gx),
-```
-
-with
-
-```math
-G = \frac{2\pi}{a}.
-```
-
-The script compares:
-
-1. the periodic part $u_k(x)$,
-2. the real part of the plane wave $e^{ikx}$,
-3. the real part of the complete Bloch wave $E_k(x)$.
-
-Vertical dashed lines indicate neighboring unit-cell boundaries.
-
-#### Output
-
-<p align="center">
-  <img src="figures/p02_bloch_wave_visualization.png" width="650">
-</p>
-
-The first figure compares the periodic part, the plane-wave factor, and the
-complete Bloch wave.
-
-<p align="center">
-  <img src="figures/p02_bloch_translation_verification.png" width="650">
-</p>
-
-The second figure verifies the Bloch translation property by comparing
-$E_k(x+a)$ with $e^{ika}E_k(x)$. The two curves overlap, confirming that
-
-```math
-E_k(x+a) = e^{ika}E_k(x).
-```
-
-### P03 — Bragg Scattering and Standing Waves
-
-Visualize the formation of standing waves produced by Bragg coupling at the
-boundary of the first Brillouin zone, and compare their field-intensity
-distributions within the periodic dielectric structure.
-
-#### Parameters
-
-- Material A refractive index: $n_1 = 1.0$
-- Material B refractive index: $n_2 = 3.5$
-- Lattice constant: $a = 1.0$
-- Number of unit cells: $6$
-- Fill fraction: $0.5$
-- Bragg wave vector: $k_{\mathrm{B}} = \pi/a$
-
-#### Model
-
-At the boundary of the first Brillouin zone,
-
-```math
-k_{\mathrm{B}} = \frac{\pi}{a},
-```
-
-the reciprocal-lattice vector is
-
-```math
-G = \frac{2\pi}{a}.
-```
-
-The periodic dielectric structure couples the forward-propagating wave
-$e^{ik_{\mathrm{B}}x}$ to the backward-propagating wave
-$e^{-ik_{\mathrm{B}}x}$ because
-
-```math
-k_{\mathrm{B}} - G = -k_{\mathrm{B}}.
-```
-
-The forward- and backward-propagating waves can be combined as
-
-```math
-e^{ik_{\mathrm{B}}x} + e^{-ik_{\mathrm{B}}x} = 2\cos(k_{\mathrm{B}}x),
-```
-
-and
-
-```math
-e^{ik_{\mathrm{B}}x} - e^{-ik_{\mathrm{B}}x} = 2i\sin(k_{\mathrm{B}}x).
-```
-
-The symmetric and antisymmetric combinations of these counter-propagating
-waves form two standing-wave modes:
-
-```math
-E_{\cos}(x) = \cos(k_{\mathrm{B}}x),
-```
-
-```math
-E_{\sin}(x) = \sin(k_{\mathrm{B}}x).
-```
-
-Their corresponding field intensities are
-
-```math
-|E_{\cos}(x)|^2 = \cos^2(k_{\mathrm{B}}x),
-```
-
-```math
-|E_{\sin}(x)|^2 = \sin^2(k_{\mathrm{B}}x).
-```
-
-Although the two modes have the same wave-vector magnitude, their intensity
-maxima occur in different parts of the unit cell. As a result, they overlap
-differently with the high- and low-index materials and acquire different
-eigenfrequencies.
-
-This frequency splitting at the Brillouin-zone boundary illustrates the
-physical origin of the photonic band gap.
-
-#### Output
-
-<p align="center">
-  <img src="figures/p03_bragg_standing_waves.png" width="650">
-</p>
-
-The figure compares the two standing-wave fields and their corresponding
-intensity distributions against the periodic dielectric background.
-
-### P04 — Transfer Matrix and Transmission Spectrum
-
-Calculate the transmission spectrum of a finite one-dimensional photonic crystal
-using the transfer-matrix method.
-
-#### Parameters
-
-- Material A refractive index: $n_1 = 1.0$
-- Material B refractive index: $n_2 = 3.5$
-- Lattice constant: $a = 1.0$
-- Fill fraction: $0.5$
-- Number of unit cells: $10$
-
-#### Model
-
-Within each homogeneous dielectric layer, the electric field is represented as
-a superposition of right- and left-propagating waves:
-
-```math
-E(x) = A e^{iqx} + B e^{-iqx},
-```
-
-where
-
-```math
-q = \frac{n\omega}{c}.
-```
-
-Propagation through a layer of thickness $d$ is described by the propagation
-matrix
-
-```math
-P(n,d,\omega) = \begin{pmatrix} e^{iqd} & 0 \\ 0 & e^{-iqd} \end{pmatrix}.
-```
-
-At an interface between two dielectric materials with refractive indices
-$n_i$ and $n_j$, the wave amplitudes are related by an interface matrix.
-
-Combining the propagation and interface matrices gives the transfer matrix of
-one unit cell. Repeating the unit-cell matrix over multiple periods gives the
-total transfer matrix of the finite photonic crystal:
-
-```math
-M_{\mathrm{total}} = M_{\mathrm{cell}}^N,
-```
-
-where $N$ is the number of unit cells.
-
-For incidence and exit through the same surrounding medium, the power
-transmission coefficient is calculated from the transmission amplitude $t$ as
-
-```math
-T = |t|^2.
-```
-
-#### Output
-
-<p align="center">
-  <img src="figures/p04_transmission_spectrum.png" width="650">
-</p>
-
-The transmission spectrum contains frequency intervals with high transmission
-and intervals in which transmission is strongly suppressed. The low-transmission
-regions indicate the formation of photonic stop bands in the finite periodic
-structure.
-
-### P05 — Allowed and Forbidden Frequency Bands
-
-Use the transfer matrix of one unit cell to determine the allowed and forbidden
-frequency regions of an infinite one-dimensional photonic crystal.
-
-#### Parameters
-
-- Material A refractive index: $n_1 = 1.0$
-- Material B refractive index: $n_2 = 3.5$
-- Lattice constant: $a = 1.0$
-- Fill fraction: $0.5$
-
-#### Model
-
-According to Bloch's theorem, the field amplitudes in neighboring unit cells are
-related by
-
-```math
-\begin{pmatrix} A(x+a) \\ B(x+a) \end{pmatrix} = e^{ika} \begin{pmatrix} A(x) \\ B(x) \end{pmatrix}.
-```
-
-Therefore, the Bloch factor $e^{ika}$ is an eigenvalue of the unit-cell transfer
-matrix $M$.
-
-For a lossless unit cell,
-
-```math
-\det(M) = 1,
-```
-
-and the eigenvalue equation gives the Bloch dispersion relation
-
-```math
-\cos(ka) = \frac{1}{2}\mathrm{Tr}(M).
-```
-
-Define the Bloch function
-
-```math
-F(\omega) = \frac{1}{2}\mathrm{Tr}(M).
-```
-
-When
-
-```math
-|F(\omega)| \leq 1,
-```
-
-a real Bloch wavevector exists, so the corresponding frequency belongs to an
-allowed photonic band.
-
-When
-
-```math
-|F(\omega)| > 1,
-```
-
-the Bloch wavevector becomes complex. The field then decays exponentially
-through the crystal, and the corresponding frequency lies inside a forbidden
-band or photonic band gap.
-
-#### Output
-
-<p align="center">
-  <img src="figures/p05_bloch_function.png" width="650">
-</p>
-
-The Bloch function is compared with the boundaries $F=1$ and $F=-1$.
-Frequencies for which the curve lies between these boundaries support real
-Bloch wavevectors.
-
-<p align="center">
-  <img src="figures/p05_allowed_forbidden_bands.png" width="650">
-</p>
-
-The second figure classifies the frequency axis into allowed and forbidden
-regions using the condition $|F(\omega)| \leq 1$.
-
-### P06 — Complex Bloch Wavevector
-
-Calculate the real and imaginary parts of the Bloch wavevector across both
-allowed and forbidden frequency regions.
-
-#### Parameters
-
-- Material A refractive index: $n_1 = 1.0$
-- Material B refractive index: $n_2 = 3.5$
-- Lattice constant: $a = 1.0$
-- Fill fraction: $0.5$
-
-#### Model
-
-The Bloch wavevector is obtained from the dispersion relation
-
-```math
-\cos(ka) = F(\omega),
-```
-
-where
-
-```math
-F(\omega) = \frac{1}{2}\mathrm{Tr}(M).
-```
-
-It can therefore be written as
-
-```math
-k(\omega) = \frac{1}{a}\arccos\left[F(\omega)\right].
-```
-
-Inside an allowed band, $|F(\omega)|\leq 1$, so $k$ is real and the Bloch wave
-propagates through the periodic structure.
-
-Inside a forbidden band, $|F(\omega)|>1$, so $k$ becomes complex:
-
-```math
-k = k_{\mathrm{r}} + i k_{\mathrm{i}}.
-```
-
-The corresponding Bloch factor is
-
-```math
-e^{ikx} = e^{ik_{\mathrm{r}}x}e^{-k_{\mathrm{i}}x}.
-```
-
-The real part $k_{\mathrm{r}}$ describes the spatial phase variation, while the
-imaginary part $k_{\mathrm{i}}$ gives the exponential attenuation rate inside
-the photonic band gap.
-
-#### Output
-
-<p align="center">
-  <img src="figures/p06_bloch_wavevector.png" width="650">
-</p>
-
-The real part of the Bloch wavevector varies across the allowed bands, while a
-nonzero imaginary part appears inside the forbidden frequency regions. This
-directly shows the transition from propagating Bloch waves to evanescent Bloch
-waves.
-
-### P07 — Photonic Band Structure
-
-Construct the photonic band structure of the one-dimensional periodic dielectric
-from the real Bloch wavevectors obtained in the allowed frequency regions.
-
-#### Parameters
-
-- Material A refractive index: $n_1 = 1.0$
-- Material B refractive index: $n_2 = 3.5$
-- Lattice constant: $a = 1.0$
-- Fill fraction: $0.5$
-
-#### Model
-
-The photonic band structure represents the relationship between the allowed
-frequencies and the corresponding real Bloch wavevectors.
-
-For each normalized frequency, the unit-cell transfer matrix is constructed and
-the Bloch relation
-
-```math
-\cos(ka) = \frac{1}{2}\mathrm{Tr}(M)
-```
-
-is evaluated.
-
-Only frequencies satisfying
-
-```math
-\left| \frac{1}{2}\mathrm{Tr}(M) \right| \leq 1
-```
-
-are included because these frequencies produce real Bloch wavevectors.
-
-The horizontal axis is the normalized Bloch wavevector
-
-```math
-\frac{ka}{\pi},
-```
-
-and the vertical axis is the normalized frequency
-
-```math
-\frac{\omega a}{2\pi c}.
-```
-
-The band structure is displayed along the one-dimensional high-symmetry path
-
-```math
-X \rightarrow \Gamma \rightarrow X,
-```
-
-where
-
-```math
-\Gamma: k=0
-```
-
-and
-
-```math
-X: k=\pm\frac{\pi}{a}.
-```
-
-#### Output
-
-<p align="center">
-  <img src="figures/p07_photonic_band_structure.png" width="650">
-</p>
-
-Each continuous branch represents an allowed photonic band. The empty frequency
-intervals separating neighboring branches are photonic band gaps, in which no
-real Bloch wavevector exists.
-
-### P08 — Band-Gap Parameter Study
-
-Investigate how the first photonic band gap of a one-dimensional periodic
-dielectric depends on refractive-index contrast, fill fraction, and the number
-of unit cells.
-
-#### Base Parameters
-
-- Material A refractive index: $n_1 = 1.0$
-- Material B refractive index: $n_2 = 3.5$
-- Lattice constant: $a = 1.0$
-- Fill fraction: $f = d_1/a = 0.5$
-- Number of unit cells: $N = 10$
-- Incident-medium refractive index: $n_{\mathrm{incident}} = 1.0$
-- Exit-medium refractive index: $n_{\mathrm{exit}} = 1.0$
-
-#### Model
-
-The first photonic band gap is identified from the unit-cell transfer matrix
-using the Bloch condition
-
-```math
-\cos(ka) = \frac{1}{2}\mathrm{Tr}(M_{\mathrm{cell}}).
-```
-
-A normalized frequency belongs to a forbidden band when
-
-```math
-\left|
-\frac{1}{2}\mathrm{Tr}(M_{\mathrm{cell}})
-\right| > 1.
-```
-
-For each parameter value, the lower and upper edges of the first band gap are
-extracted as
-
-```math
-\nu_{\mathrm{lower}},
-\qquad
-\nu_{\mathrm{upper}},
-```
-
-where
-
-```math
-\nu = \frac{\omega a}{2\pi c}.
-```
-
-The absolute band-gap width is
-
-```math
-\Delta\nu =\nu_{\mathrm{upper}} - \nu_{\mathrm{lower}},
-```
-
-and the relative band-gap width is
-
-```math
-\frac{\Delta\nu}{\nu_{\mathrm{mid}}},
-\qquad
-\nu_{\mathrm{mid}}
-=
-\frac{
-\nu_{\mathrm{lower}}
-+
-\nu_{\mathrm{upper}}
-}{2}.
-```
-
-Three parameter studies are performed.
-
-#### Refractive-Index Contrast
-
-The refractive index of material B is varied over
-
-```math
-n_2 = 1.5,\ 2.0,\ 2.5,\ 3.5,\ 4.5,
-```
-
-while the physical fill fraction remains fixed.
-
-Increasing the refractive-index contrast shifts the first band gap toward lower
-normalized frequencies. The absolute gap width is non-monotonic because both
-the refractive-index contrast and the optical thickness of the second layer
-change simultaneously. In contrast, the relative gap width increases with
-refractive-index contrast.
-
-For example, increasing $n_2$ from $1.5$ to $4.5$ shifts the first band-gap
-center from approximately $0.399$ to $0.166$, while the relative gap width
-increases from approximately $0.243$ to $0.541$.
-
-<p align="center">
-  <img
-    src="figures/p08_index_contrast_transmission.png"
-    alt="Transmission spectra for different refractive-index contrasts"
-    width="650"
-  >
-</p>
-
-<p align="center">
-  <img
-    src="figures/p08_index_contrast_gap_edges.png"
-    alt="First band-gap edges versus refractive-index contrast"
-    width="650"
-  >
-</p>
-
-<p align="center">
-  <img
-    src="figures/p08_index_contrast_gap_width.png"
-    alt="Absolute first band-gap width versus refractive-index contrast"
-    width="650"
-  >
-</p>
-
-<p align="center">
-  <img
-    src="figures/p08_index_contrast_relative_gap_width.png"
-    alt="Relative first band-gap width versus refractive-index contrast"
-    width="650"
-  >
-</p>
-
-#### Fill Fraction
-
-The fill fraction
-
-```math
-f = \frac{d_1}{a}
-```
-
-is varied while maintaining
-
-```math
-d_1 = fa,
-\qquad
-d_2 = (1-f)a.
-```
-
-The relative band-gap width reaches a maximum near $f \approx 0.8$. This agrees
-with the equal-optical-thickness condition
-
-```math
-n_1d_1 = n_2d_2,
-```
-
-which predicts
-
-```math
-f_{\mathrm{opt}}
-=
-\frac{n_2}{n_1+n_2}
-=
-\frac{3.5}{4.5}
-\approx 0.778.
-```
-
-As the fill fraction approaches either extreme, one dielectric layer becomes
-very thin and the periodic modulation weakens.
-
-The relative gap width increases from approximately $0.093$ at $f=0.10$ to a
-maximum of approximately $0.745$ near $f=0.80$, before decreasing as
-$f$ approaches $1$.
-
-<p align="center">
-  <img
-    src="figures/p08_fill_fraction_transmission.png"
-    alt="Transmission spectra for different fill fractions"
-    width="650"
-  >
-</p>
-
-<p align="center">
-  <img
-    src="figures/p08_fill_fraction_gap_edges.png"
-    alt="First band-gap edges versus fill fraction"
-    width="650"
-  >
-</p>
-
-<p align="center">
-  <img
-    src="figures/p08_fill_fraction_gap_width.png"
-    alt="Absolute first band-gap width versus fill fraction"
-    width="650"
-  >
-</p>
-
-<p align="center">
-  <img
-    src="figures/p08_fill_fraction_relative_gap_width.png"
-    alt="Relative first band-gap width versus fill fraction"
-    width="650"
-  >
-</p>
-
-#### Number of Unit Cells
-
-The number of unit cells is varied over
-
-```math
-N = 2,\ 4,\ 6,\ 10,\ 20.
-```
-
-Changing $N$ does not alter the theoretical band-gap boundaries because the
-unit-cell structure remains unchanged. Instead, increasing $N$ strengthens the
-suppression of transmission inside the band gap and makes the band edges
-sharper.
-
-The transmission at the center of the first band gap decreases approximately
-exponentially with crystal length:
-
-```math
-T(N) \propto e^{-2\kappa Na},
-```
-
-where $\kappa$ is the imaginary part of the Bloch wavevector inside the gap.
-
-At the center of the first band gap, the transmission decreases from
-approximately $8.26\times10^{-2}$ for $N=2$ to
-$3.43\times10^{-15}$ for $N=20$.
-
-<p align="center">
-  <img
-    src="figures/p08_cell_number_transmission.png"
-    alt="Transmission spectra for different numbers of unit cells"
-    width="650"
-  >
-</p>
-
-<p align="center">
-  <img
-    src="figures/p08_cell_number_gap_suppression.png"
-    alt="Band-gap-center transmission versus number of unit cells"
-    width="650"
-  >
-</p>
-
-The results distinguish changes to the intrinsic band structure from
-finite-size effects. Refractive-index contrast and fill fraction modify the
-unit cell and therefore change the band gap itself, whereas the number of unit
-cells controls how strongly a finite crystal suppresses transmission within
-that gap.
-
-### P09 — One-Dimensional Band-Edge Field Profiles
-
-Locate the edges of the first photonic band gap and visualize the corresponding
-electric-field intensity profiles in the one-dimensional periodic dielectric.
-
-#### Parameters
-
-- Material A refractive index: $n_1 = 1.0$
-- Material B refractive index: $n_2 = 3.5$
-- Lattice constant: $a = 1.0$
-- Fill fraction: $0.5$
-- Number of displayed unit cells: $6$
-
-#### Model
-
-The first photonic band gap is located using the Bloch function
-
-```math
-F(\nu)
-=
-\frac{1}{2}
-\mathrm{Tr}
-\left(
-M_{\mathrm{cell}}
-\right),
-```
-
-where the normalized frequency is
-
-```math
-\nu
-=
-\frac{\omega a}{2\pi c}.
-```
-
-The lower and upper band-edge frequencies satisfy
-
-```math
-\left|F(\nu)\right|=1.
-```
-
-For the selected dielectric structure, the first band-gap edges are approximately
-
-```math
-\nu_{\mathrm{lower}}
-\approx 0.155319,
-```
-
-and
-
-```math
-\nu_{\mathrm{upper}}
-\approx 0.263047.
-```
-
-At a band edge, the Bloch eigenvalue is either $+1$ or $-1$, so the
-electromagnetic state satisfies
-
-```math
-M_{\mathrm{cell}}\mathbf{v}
-=
-\lambda\mathbf{v},
-\qquad
-\lambda=\pm1.
-```
-
-The electric field inside each homogeneous layer is reconstructed as a
-superposition of forward- and backward-propagating waves:
-
-```math
-E(x) = E_{+}e^{iqx} + E_{-}e^{-iqx},
-```
-
-where
-
-```math
-q = \frac{n\omega}{c}.
-```
-
-The normalized electric-field intensity is then calculated from
-
-```math
-I(x)
-=
-\frac{|E(x)|^2}
-{\max |E(x)|^2}.
-```
-
-The two band-edge modes form different standing-wave patterns.
-
-The lower-frequency mode is concentrated mainly in the high-index regions,
-where the relative permittivity
-
-```math
-\varepsilon_r=n^2
-```
-
-is larger.
-
-The upper-frequency mode is concentrated mainly in the low-index regions,
-where the relative permittivity is smaller.
-
-Because the two modes overlap differently with the dielectric structure, they
-acquire different eigenfrequencies. This frequency splitting separates the
-lower and upper photonic bands and produces the photonic band gap.
-
-#### Output
-
-<p align="center">
-  <img
-    src="figures/p09_band_edge_field_profiles.png"
-    alt="First photonic band gap and corresponding lower- and upper-edge electric-field intensity profiles"
-    width="650"
-  >
-</p>
-
-The upper panel identifies the first photonic band gap from the condition
-$|F(\nu)|>1$ and marks its lower and upper frequency edges.
-
-The middle panel shows the lower band-edge mode, whose electric-field intensity
-is concentrated primarily in the high-index layers.
-
-The lower panel shows the upper band-edge mode, whose electric-field intensity
-is concentrated primarily in the low-index layers.
-
-These spatial field profiles provide a direct visualization of the band-gap
-opening caused by Bragg coupling and dielectric-frequency splitting.
-
-The physical mechanism can be summarized as
-
-```math
-\text{different spatial localization}
-\rightarrow
-\text{different eigenfrequencies}
-\rightarrow
-\text{photonic band-gap opening}.
-```
-
-### P10 — One-Dimensional Defect Mode
-
-Introduce a central defect layer into a finite one-dimensional photonic crystal
-and calculate the resulting transmission spectrum and spatial field profile.
-
-#### Parameters
-
-- Material A refractive index: $n_1 = 1.0$
-- Material B refractive index: $n_2 = 3.5$
-- Incident-medium refractive index: $n_{\mathrm{in}} = 1.0$
-- Exit-medium refractive index: $n_{\mathrm{out}} = 1.0$
-- Lattice constant: $a = 1.0$
-- Fill fraction: $0.5$
-- Number of Bragg-mirror cells on each side: $N = 6$
-- Defect refractive index: $n_{\mathrm{d}} = 1.0$
-- Defect thickness: $d_{\mathrm{d}} = a$
-
-#### Structure
-
-The perfect reference crystal is constructed as
-
-```math
-(AB)^{2N},
-```
-
-while the defect crystal has the symmetric structure
-
-```math
-(AB)^N D(BA)^N.
-```
-
-The central defect layer breaks the translational symmetry of the periodic
-crystal and introduces a localized electromagnetic mode inside the first
-photonic band gap.
-
-#### Model
-
-The field-state transfer matrix is used to propagate the electromagnetic state
-
-```math
-\begin{pmatrix} E \\ H \end{pmatrix}
-```
-
-through the complete multilayer structure.
-
-The transmission amplitude is obtained by matching the incident, reflected,
-and transmitted waves at the external boundaries. The power transmission is
-
-```math
-T = \frac{n_{\mathrm{out}}}{n_{\mathrm{in}}} |t|^2.
-```
-
-The transmission spectra of the perfect and defect crystals are compared over
-the same frequency range. The defect-mode frequency is identified as the
-maximum-transmission point located inside the first photonic band gap.
-
-At this resonant frequency, the electric field is reconstructed throughout the
-multilayer structure. The normalized field intensity is calculated as
-
-```math
-\frac{|E(x)|^2}
-{\max |E(x)|^2}.
-```
-
-#### Output
-
-<p align="center">
-  <img src="figures/p10_1d_defect_mode.png" width="750">
-</p>
-
-The perfect crystal strongly suppresses transmission inside the photonic band
-gap. Introducing the central defect produces a narrow transmission resonance
-within the gap.
-
-The corresponding electric-field intensity is concentrated near the defect
-layer and decays into the surrounding periodic Bragg mirrors. This spatial
-localization demonstrates the formation of a one-dimensional photonic-crystal
-defect cavity.
-
-### P11 — Two-Dimensional Periodic Dielectric
-
-Construct and visualize a two-dimensional square lattice of dielectric rods
-embedded in an air background.
-
-#### Parameters
-
-- Background refractive index: $n_{\mathrm{bg}} = 1.0$
-- Rod refractive index: $n_{\mathrm{rod}} = 3.5$
-- Lattice constant: $a = 1.0$
-- Rod radius: $r = 0.2a$
-- Number of unit cells: $6 \times 6$
-
-#### Model
-
-Identical circular dielectric rods are placed at the center of each unit cell
-of a two-dimensional square lattice. The refractive-index distribution is
-periodic along both the $x$- and $y$-directions:
-
-```math
-n(x + a, y) = n(x, y),
-```
-
-```math
-n(x, y + a) = n(x, y).
-```
-
-A point $(x,y)$ lies inside a rod centered at $(x_c,y_c)$ when
-
-```math
-(x-x_c)^2 + (y-y_c)^2 \leq r^2.
-```
-
-The relative permittivity is obtained from
-
-```math
-\varepsilon_r(x,y) = n^2(x,y).
-```
-
-#### Output
-
-<p align="center">
-  <img
-    src="figures/p11_2d_dielectric_structure.png"
-    alt="Two-dimensional square lattice of dielectric rods in air"
-    width="650"
-  >
-</p>
-
-The resulting structure serves as the real-space geometric foundation for
-two-dimensional reciprocal-lattice, Brillouin-zone, and photonic-band
-calculations.
-
-### P12 — Reciprocal Lattice and Brillouin Zone
-
-Construct and visualize the reciprocal lattice and first Brillouin zone of a
-two-dimensional square lattice.
-
-#### Parameters
-
-- Lattice constant: $a = 1.0$
-- Real-space lattice vectors:
-
-```math
-\mathbf{a}_1 =
-\begin{pmatrix}
-a \\
-0
-\end{pmatrix},
-\qquad
-\mathbf{a}_2 =
-\begin{pmatrix}
-0 \\
-a
-\end{pmatrix}
-```
-
-- Reciprocal-lattice index range: $-2 \leq m,n \leq 2$
-
-#### Model
-
-The reciprocal-lattice basis vectors are calculated from the real-space lattice
-vectors using
-
-```math
-\mathbf{a}_i \cdot \mathbf{b}_j = 2\pi\delta_{ij}.
-```
-
-For the square lattice,
-
-```math
-\mathbf{b}_1 = \begin{pmatrix}2\pi/a \\0\end{pmatrix},
-\qquad\mathbf{b}_2 = \begin{pmatrix}0 \\2\pi/a\end{pmatrix}.
-```
-
-The reciprocal-lattice points are generated from
-
-```math
-\mathbf{G} = m\mathbf{b}_1 + n\mathbf{b}_2, \qquad m,n\in\mathbb{Z}.
-```
-
-The first Brillouin zone is the square region
-
-```math
--\frac{\pi}{a} \leq k_x \leq \frac{\pi}{a},
-\qquad
--\frac{\pi}{a} \leq k_y \leq \frac{\pi}{a}.
-```
-
-The standard high-symmetry points are
-
-```math
-\Gamma=(0,0),
-\qquad
-X=\left(\frac{\pi}{a},0\right),
-\qquad
-M=\left(\frac{\pi}{a},\frac{\pi}{a}\right).
-```
-
-The path
-
-```math
-\Gamma
-\rightarrow
-X
-\rightarrow
-M
-\rightarrow
-\Gamma
-```
-
-is displayed as the standard wavevector path used in subsequent
-two-dimensional photonic band-structure calculations.
-
-#### Output
-
-<p align="center">
-  <img src="figures/p12_reciprocal_lattice_brillouin_zone.png" width="850">
-</p>
-
-This reciprocal-space construction provides the geometric foundation for
-generating discrete wavevector paths and calculating two-dimensional photonic
-band structures using the plane-wave expansion method.
-
-### P13 — Fourier Coefficients of the Dielectric Function
-
-Calculate and visualize the reciprocal-space Fourier coefficients of the
-dielectric function and inverse dielectric function for a two-dimensional
-square lattice of circular dielectric rods.
-
-#### Parameters
-
-- Background refractive index: $n_{\mathrm{bg}} = 1.0$
-- Rod refractive index: $n_{\mathrm{rod}} = 3.5$
-- Lattice constant: $a = 1.0$
-- Rod radius: $r = 0.2a$
-- Reciprocal-lattice index limit: $-5 \leq m,n \leq 5$
-
-#### Model
-
-The dielectric structure consists of circular dielectric rods embedded in a
-uniform background. The corresponding permittivities are
-
-```math
-\varepsilon_{\mathrm{rod}} = n_{\mathrm{rod}}^2,
-\qquad
-\varepsilon_{\mathrm{bg}} = n_{\mathrm{bg}}^2.
-```
-
-The dielectric function is expanded in reciprocal space as
-
-```math
-\varepsilon(\mathbf r)
-=
-\sum_{\mathbf G}
-\varepsilon_{\mathbf G}
-e^{i\mathbf G\cdot\mathbf r},
-```
-
-where the Fourier coefficients are
-
-```math
-\varepsilon_{\mathbf G}
-=
-\frac{1}{A_{\mathrm{cell}}}
-\int_{\mathrm{cell}}
-\varepsilon(\mathbf r)
-e^{-i\mathbf G\cdot\mathbf r}
-\,d^2r.
-```
-
-For circular rods centered in the unit cell, the nonzero reciprocal-space
-coefficients are determined analytically using the circular form factor
-
-```math
-\frac{2J_1(|\mathbf G|r)}{|\mathbf G|r},
-```
-
-where $J_1$ is the first-order Bessel function of the first kind.
-
-The same procedure is also applied to the inverse dielectric function,
-
-```math
-\eta(\mathbf r) = \frac{1}{\varepsilon(\mathbf r)},
-```
-
-to obtain the coefficients
-
-```math
-\eta_{\mathbf G} = \left(\frac{1}{\varepsilon}\right)_{\mathbf G}.
-```
-
-These inverse-dielectric coefficients are required when constructing the
-plane-wave expansion matrices for two-dimensional photonic crystals.
-
-#### Numerical Example
-
-The filling fraction of the dielectric rods is
-
-```math
-f = \frac{\pi r^2}{a^2} = 0.125664.
-```
-
-The calculated zero-order coefficients are
-
-```math
-\varepsilon_{\mathbf 0}
-=
-(1-f)\varepsilon_{\mathrm{bg}}
-+
-f\varepsilon_{\mathrm{rod}}
-=
-2.413717,
-```
-
-and
-
-```math
-\left(\frac{1}{\varepsilon}\right)_{\mathbf 0}
-=
-\frac{1-f}{\varepsilon_{\mathrm{bg}}}
-+
-\frac{f}{\varepsilon_{\mathrm{rod}}}
-=
-0.884595.
-```
-
-The zero-order inverse-dielectric coefficient is generally not equal to the
-inverse of the zero-order dielectric coefficient:
-
-```math
-\left(\frac{1}{\varepsilon}\right)_{\mathbf 0}
-\neq
-\frac{1}{\varepsilon_{\mathbf 0}}.
-```
-
-#### Output
-
-<p align="center">
-  <img src="figures/p13_fourier_coefficients.png" width="850">
-</p>
-
-The left panel shows the Fourier coefficients
-$\varepsilon_{\mathbf G}$, while the right panel shows the coefficients
-$(1/\varepsilon)_{\mathbf G}$. The coefficients are largest near
-$\mathbf G=\mathbf 0$ and generally decrease in magnitude for larger
-reciprocal-lattice vectors.
-
-The approximately radial coefficient pattern reflects the circular symmetry
-of the dielectric rods. These coefficients provide the reciprocal-space
-material representation used in the subsequent plane-wave expansion
-calculation.
-
-### P14 — Two-Dimensional TE and TM Band Structures
-
-Calculate and visualize the TE and TM photonic band structures of a
-two-dimensional square lattice of circular dielectric rods using the
-plane-wave expansion method.
-
-#### Parameters
-
-- Background refractive index: $n_{\mathrm{bg}} = 1.0$
-- Rod refractive index: $n_{\mathrm{rod}} = 3.5$
-- Lattice constant: $a = 1.0$
-- Rod radius: $r = 0.2a$
-- Reciprocal-lattice index limit: $N = 3$
-- Number of plane waves: $N_G = (2N+1)^2 = 49$
-- Wavevector path: $\Gamma \rightarrow X \rightarrow M \rightarrow \Gamma$
-- Number of sampled points per path segment: $30$
-- Number of plotted bands: $8$
-
-#### Plane-Wave Basis
-
-The electromagnetic fields are expanded in reciprocal-space plane waves
-labelled by reciprocal-lattice vectors
-
-```math
-\mathbf{G} = m\mathbf{b}_1 + n\mathbf{b}_2,
-```
-
-where
-
-```math
--N \leq m,n \leq N.
-```
-
-For each Bloch wavevector $\mathbf{k}$, the field is represented using plane-wave
-components with wavevectors
-
-```math
-\mathbf{k}+\mathbf{G}.
-```
-
-The reciprocal-space basis is truncated to a finite set so that the Maxwell
-eigenvalue equations can be represented numerically as finite matrices.
-
-#### Dielectric Convolution Matrices
-
-The Fourier coefficients calculated in P13 are used to construct the material
-convolution matrices
-
-```math
-B_{\mathbf{G},\mathbf{G}'}
-=
-\varepsilon_{\mathbf{G}-\mathbf{G}'}
-```
-
-and
-
-```math
-\eta_{\mathbf{G},\mathbf{G}'}
-=
-\left(\frac{1}{\varepsilon}\right)_{\mathbf{G}-\mathbf{G}'}.
-```
-
-The dependence on $\mathbf{G}-\mathbf{G}'$ describes the coupling between
-different plane-wave components produced by the periodic dielectric structure.
-
-#### TE Polarization
-
-For TE polarization, the nonzero out-of-plane field component is $H_z$.
-
-The plane-wave eigenvalue equation is
-
-```math
-\sum_{\mathbf{G}'}
-(\mathbf{k}+\mathbf{G})
-\cdot
-(\mathbf{k}+\mathbf{G}')
-\left(\frac{1}{\varepsilon}\right)_{\mathbf{G}-\mathbf{G}'}
-H_{\mathbf{G}'}
-=
-\frac{\omega^2}{c^2}
-H_{\mathbf{G}}.
-```
-
-The TE matrix elements are therefore
-
-```math
-A^{\mathrm{TE}}_{\mathbf{G},\mathbf{G}'}
-=
-(\mathbf{k}+\mathbf{G})
-\cdot
-(\mathbf{k}+\mathbf{G}')
-\left(\frac{1}{\varepsilon}\right)_{\mathbf{G}-\mathbf{G}'}.
-```
-
-This produces the standard Hermitian eigenvalue problem
-
-```math
-A^{\mathrm{TE}}\mathbf{H}
-=
-\frac{\omega^2}{c^2}\mathbf{H}.
-```
-
-#### TM Polarization
-
-For TM polarization, the nonzero out-of-plane field component is $E_z$.
-
-The plane-wave equation is
-
-```math
-|\mathbf{k}+\mathbf{G}|^2 E_{\mathbf{G}}
-=
-\frac{\omega^2}{c^2}
-\sum_{\mathbf{G}'}
-\varepsilon_{\mathbf{G}-\mathbf{G}'}
-E_{\mathbf{G}'}.
-```
-
-This is written as the generalized eigenvalue problem
-
-```math
-A^{\mathrm{TM}}\mathbf{E}
-=
-\frac{\omega^2}{c^2}
-B^{\mathrm{TM}}\mathbf{E},
-```
-
-where
-
-```math
-A^{\mathrm{TM}}_{\mathbf{G},\mathbf{G}'}
-=
-|\mathbf{k}+\mathbf{G}|^2
-\delta_{\mathbf{G},\mathbf{G}'}
-```
-
-and
-
-```math
-B^{\mathrm{TM}}_{\mathbf{G},\mathbf{G}'}
-=
-\varepsilon_{\mathbf{G}-\mathbf{G}'}.
-```
-
-#### High-Symmetry Path
-
-The band structure is evaluated along the standard irreducible Brillouin-zone
-path for a square lattice:
-
-```math
-\Gamma \rightarrow X \rightarrow M \rightarrow \Gamma,
-```
-
-with
-
-```math
-\Gamma=(0,0),
-```
-
-```math
-X=\left(\frac{\pi}{a},0\right),
-```
-
-and
-
-```math
-M=\left(\frac{\pi}{a},\frac{\pi}{a}\right).
-```
-
-This path samples the boundary and diagonal directions of the first Brillouin
-zone while taking advantage of the rotational and reflection symmetries of the
-square lattice.
-
-#### Normalized Frequency
-
-The eigenvalues correspond to
-
-```math
-\lambda=\frac{\omega^2}{c^2}.
-```
-
-They are converted to the dimensionless normalized frequency
-
-```math
-\frac{\omega a}{2\pi c}.
-```
-
-Using normalized frequency makes the calculated band structure independent of
-the absolute physical scale of the lattice.
-
-#### Output
-
-<p align="center">
-  <img src="figures/p14_2d_te_tm_band_structure.png" width="900">
-</p>
-
-The left panel shows the TE bands associated with the $H_z$ field component,
-while the right panel shows the TM bands associated with the $E_z$ field
-component.
-
-The lowest band begins at zero frequency at the $\Gamma$ point, as expected for
-long-wavelength electromagnetic modes. The TE and TM band structures differ
-because their eigenvalue matrices depend differently on the dielectric function.
-
-Degenerate or nearly degenerate eigenfrequencies can appear at high-symmetry
-points because multiple electromagnetic modes may be related by the symmetry of
-the square lattice.
-
-This module combines the reciprocal-lattice construction from P12 and the
-dielectric Fourier coefficients from P13 to produce the first complete
-two-dimensional photonic-band calculation in the project.
-
-### P15 — Complete Photonic Band-Gap Search
-
-Analyze the calculated TE and TM photonic band structures and identify
-frequency intervals in which neither polarization supports a propagating mode.
-
-#### Parameters
-
-- Background refractive index: $n_{\mathrm{bg}} = 1.0$
-- Rod refractive index: $n_{\mathrm{rod}} = 3.5$
-- Lattice constant: $a = 1.0$
-- Rod radius: $r = 0.2a$
-- Reciprocal-lattice index limit: $N = 3$
-- Number of plane waves:
-
-```math
-N_G = (2N+1)^2 = 49
-```
-
-- Wavevector path:
-
-```math
-\Gamma
-\rightarrow
-X
-\rightarrow
-M
-\rightarrow
-\Gamma
-```
-
-- Number of sampled points per path segment: $30$
-- Number of calculated bands: $8$
-
-#### Band-Gap Identification
-
-For each polarization, a band gap between neighboring bands $n$ and $n+1$
-exists when the minimum frequency of the upper band lies above the maximum
-frequency of the lower band:
-
-```math
-\min_{\mathbf{k}}
-\omega_{n+1}(\mathbf{k})
->
-\max_{\mathbf{k}}
-\omega_n(\mathbf{k}).
-```
-
-The lower and upper band-gap boundaries are therefore
-
-```math
-\omega_{\mathrm{lower}}
-=
-\max_{\mathbf{k}}
-\omega_n(\mathbf{k}),
-```
-
-and
-
-```math
-\omega_{\mathrm{upper}}
-=
-\min_{\mathbf{k}}
-\omega_{n+1}(\mathbf{k}).
-```
-
-The band-gap width is
-
-```math
-\Delta\omega
-=
-\omega_{\mathrm{upper}}
--
-\omega_{\mathrm{lower}}.
-```
-
-The midgap frequency is
-
-```math
-\omega_{\mathrm{mid}}
-=
-\frac{
-\omega_{\mathrm{lower}}
-+
-\omega_{\mathrm{upper}}
-}{2},
-```
-
-and the relative gap width is measured by the gap-to-midgap ratio
-
-```math
-\frac{\Delta\omega}{\omega_{\mathrm{mid}}}.
-```
-
-#### Complete Photonic Band Gap
-
-A complete photonic band gap must be forbidden for both TE and TM
-polarizations.
-
-If a TE gap occupies the interval
-
-```math
-[
-\omega_{\mathrm{TE,lower}},
-\omega_{\mathrm{TE,upper}}
-],
-```
-
-and a TM gap occupies
-
-```math
-[
-\omega_{\mathrm{TM,lower}},
-\omega_{\mathrm{TM,upper}}
-],
-```
-
-their common forbidden interval is
-
-```math
-\omega_{\mathrm{complete,lower}}
-=
-\max
-\left(
-\omega_{\mathrm{TE,lower}},
-\omega_{\mathrm{TM,lower}}
-\right),
-```
-
-```math
-\omega_{\mathrm{complete,upper}}
-=
-\min
-\left(
-\omega_{\mathrm{TE,upper}},
-\omega_{\mathrm{TM,upper}}
-\right).
-```
-
-A complete band gap exists only when
-
-```math
-\omega_{\mathrm{complete,upper}}
->
-\omega_{\mathrm{complete,lower}}.
-```
-
-#### Calculated TE Band Gap
-
-For the selected structure, one narrow TE band gap is detected between bands
-4 and 5:
-
-```math
-0.913730
-<
-\frac{\omega a}{2\pi c}
-<
-0.918983.
-```
-
-Its width is approximately $0.005254$, corresponding to a gap-to-midgap ratio
-of approximately $0.573\%$.
-
-#### Calculated TM Band Gaps
-
-Three TM band gaps are detected:
-
-```math
-0.278188
-<
-\frac{\omega a}{2\pi c}
-<
-0.415995,
-```
-
-```math
-0.712621
-<
-\frac{\omega a}{2\pi c}
-<
-0.745993,
-```
-
-and
-
-```math
-0.879116
-<
-\frac{\omega a}{2\pi c}
-<
-0.910997.
-```
-
-The first TM gap is the widest, with a gap-to-midgap ratio of approximately
-$39.7\%$.
-
-#### Complete-Gap Result
-
-No overlapping TE–TM band gap is found for the selected structure.
-
-The highest TM gap ends at approximately $0.910997$, while the TE gap begins at
-approximately $0.913730$. The remaining separation of approximately $0.002733$
-prevents the formation of a complete photonic band gap.
-
-This result shows that the square lattice of dielectric rods supports several
-polarization-dependent band gaps, particularly a wide low-frequency TM gap,
-but does not produce a polarization-independent forbidden interval for the
-selected material and geometric parameters.
-
-#### Output
-
-<p align="center">
-  <img
-    src="figures/p15_complete_band_gap_search.png"
-    alt="Combined TE and TM photonic band structures and complete band-gap search"
+    src="figures/p14_2d_te_tm_band_structure.png"
+    alt="Two-dimensional TE and TM photonic band structure"
     width="850"
   >
 </p>
 
-The dashed curves represent the TE bands and the solid curves represent the TM
-bands.
+## Contents
 
-Because no complete TE–TM band gap is found, no common forbidden-frequency
-region is shaded. The figure instead reports that the selected structure does
-not contain a complete photonic band gap along the sampled high-symmetry path.
+- [Features](#features)
+- [Implemented Modules](#implemented-modules)
+  - [One-Dimensional Photonic Crystals](#one-dimensional-photonic-crystals)
+  - [Two-Dimensional Photonic Crystals](#two-dimensional-photonic-crystals)
+  - [Defect Cavities and Waveguides](#defect-cavities-and-waveguides)
+- [Documentation](#documentation)
+- [Project Structure](#project-structure)
+- [Status](#status)
+- [License](#license)
 
-The search is performed over the calculated
+## Features
 
-```math
-\Gamma
-\rightarrow
-X
-\rightarrow
-M
-\rightarrow
-\Gamma
-```
+- One-dimensional transfer-matrix modeling
+- Bloch-wave and complex-wavevector calculations
+- Photonic band-structure and band-gap identification
+- Band-gap parameter studies and band-edge field reconstruction
+- One-dimensional defect resonances and transmission analysis
+- Two-dimensional reciprocal-lattice and Brillouin-zone construction
+- Dielectric and inverse-dielectric Fourier coefficients
+- TE and TM plane-wave expansion calculations
+- Polarization-dependent and complete band-gap analysis
+- Point-defect supercell calculations
+- TM and TE cavity-mode comparison
+- Line-defect photonic-crystal waveguides
+- Guided-mode identification through transverse field confinement
+- Real-space electromagnetic-field reconstruction
 
-path. A complete verification would require sampling the entire irreducible
-Brillouin zone rather than only the high-symmetry path.
+## Implemented Modules
 
-### P16 — Two-Dimensional TM Point-Defect Cavity
+The repository is organized as a sequence of 18 modules. Each module introduces
+one physical idea, implements the corresponding numerical model, and produces
+publication-style figures that connect the calculation to its physical meaning.
 
-Introduce a point defect into the two-dimensional square lattice by removing
-the central dielectric rod from a finite supercell, and calculate the resulting
-TM defect-supercell band structure and localized cavity mode.
+### One-Dimensional Photonic Crystals
 
-#### Parameters
+#### P01 — One-Dimensional Periodic Dielectric
 
-- Background refractive index: $n_{\mathrm{bg}} = 1.0$
-- Rod refractive index: $n_{\mathrm{rod}} = 3.5$
-- Primitive lattice constant: $a = 1.0$
-- Rod radius: $r = 0.2a$
-- Supercell size: $5\times5$
-- Supercell side length: $L=5a$
-- Supercell reciprocal-lattice index limit: $N=7$
-- Number of supercell plane waves: $225$
-- Number of calculated supercell bands: $32$
-- Localization radius: $0.75a$
+**Description**
 
-#### Point-Defect Supercell
+Construct a one-dimensional periodic dielectric from alternating low- and
+high-index layers. This is the base geometry used by the transfer-matrix,
+Bloch-wave, and band-structure modules that follow.
 
-A $5\times5$ supercell is constructed from the primitive square lattice, and
-the central dielectric rod is removed to create a point defect.
+**Highlights**
 
-The perfect supercell contains $25$ rods, while the defect supercell contains
-$24$. Although primitive-cell translational symmetry is broken, periodic
-boundary conditions are retained at the supercell level. The numerical model
-therefore represents a periodic array of identical defects separated by
-$L=5a$.
+- Periodic refractive-index profile
+- Adjustable lattice constant and fill fraction
+- Clear distinction between the two dielectric constituents
 
-A larger supercell would reduce the interaction between neighboring periodic
-copies and more closely approximate an isolated cavity.
-
-The enlarged real-space period reduces the Brillouin-zone dimensions by a
-factor of five. The supercell bands are evaluated along
-
-```math
-\Gamma_s
-\rightarrow
-X_s
-\rightarrow
-M_s
-\rightarrow
-\Gamma_s.
-```
-
-#### Band Folding
-
-Because the supercell Brillouin zone is smaller than the primitive Brillouin
-zone, each primitive-cell band is folded into multiple supercell bands.
-
-These folded bands do not represent new physical modes by themselves. They
-arise because wavevectors that were distinct in the primitive Brillouin zone
-become equivalent modulo supercell reciprocal-lattice vectors.
-
-The point defect perturbs the folded supercell bands and may introduce a
-localized defect band inside a photonic band gap of the perfect crystal.
-
-#### Supercell Material Representation
-
-The defect-supercell dielectric function is represented using the Fourier
-method introduced in P13.
-
-For the supercell, the Fourier coefficients include the phase contributions
-from all rod positions. Removing the central rod changes this structure factor
-and therefore modifies the dielectric convolution matrix used in the Maxwell
-eigenvalue problem.
-
-#### TM Supercell Eigenvalue Problem
-
-For TM polarization, the nonzero out-of-plane field component is $E_z$.
-
-The same generalized plane-wave eigenvalue problem introduced in P14 is solved
-using the defect-supercell reciprocal vectors and dielectric convolution
-matrix:
-
-```math
-A^{\mathrm{TM}}\mathbf E
-=
-\frac{\omega^2}{c^2}
-B^{\mathrm{TM}}\mathbf E.
-```
-
-Frequencies are normalized using the primitive lattice constant,
-
-```math
-\frac{\omega a}{2\pi c},
-```
-
-so that the supercell spectrum can be compared directly with the
-perfect-crystal bands and gaps from P14 and P15.
-
-#### Field Reconstruction and Localization
-
-The selected eigenvector is reconstructed in real space as
-
-```math
-E_z(\mathbf r)
-=
-\sum_{\mathbf G}
-E_{\mathbf G}
-e^{i(\mathbf k+\mathbf G)\cdot\mathbf r}.
-```
-
-The normalized intensity is
-
-```math
-I_{\mathrm{normalized}}(\mathbf r)
-=
-\frac{|E_z(\mathbf r)|^2}
-{\max_{\mathbf r}|E_z(\mathbf r)|^2}.
-```
-
-Localization is quantified by the fraction of total sampled intensity inside a
-circle of radius $R=0.75a$ centered on the missing rod:
-
-```math
-\eta
-=
-\frac{
-\displaystyle
-\sum_{|\mathbf r|\leq R}
-|E_z(\mathbf r)|^2
-}{
-\displaystyle
-\sum_{\mathrm{supercell}}
-|E_z(\mathbf r)|^2
-}.
-```
-
-#### Defect-Mode Result
-
-The defect-supercell spectrum contains a nearly dispersionless band inside the
-first TM band gap of the perfect crystal.
-
-The selected mode has normalized frequency
-
-```math
-\frac{\omega a}{2\pi c}
-\approx
-0.3797,
-```
-
-with localization fraction
-
-```math
-\eta
-\approx
-0.77.
-```
-
-The weak dispersion indicates limited coupling between neighboring periodic
-copies of the cavity, while the large localization fraction confirms that the
-field is concentrated near the missing rod.
-
-#### Output
+**Key result:** A ten-cell structure with $n_1=1.0$, $n_2=3.5$, and equal
+physical layer widths provides the reference system for P02–P10.
 
 <p align="center">
-  <img
-    src="figures/p16_2d_tm_defect_cavity.png"
-    alt="Two-dimensional TM missing-rod point-defect cavity, defect-supercell bands, and localized electric-field intensity"
-    width="950"
-  >
+  <img src="figures/p01_periodic_dielectric.png" alt="One-dimensional periodic dielectric" width="650">
 </p>
 
-The figure combines the missing-rod supercell, the TM defect-supercell bands,
-and the normalized $|E_z|^2$ distribution. The highlighted nearly flat band
-lies inside the perfect-crystal TM gap, and its field is strongly localized
-around the central defect.
+#### P02 — Bloch Wave Visualization
 
-This demonstrates the formation of a genuine two-dimensional TM
-photonic-crystal cavity mode through band-gap confinement.
+**Description**
 
-### P17 — Two-Dimensional TE Point-Defect Cavity
+Visualize the periodic envelope, plane-wave factor, and full Bloch wave in a
+one-dimensional lattice. A direct translation test verifies that the field
+reproduces itself from cell to cell up to a phase factor.
 
-Apply the same missing-rod supercell geometry to TE polarization and determine
-whether the point defect produces a corresponding TE cavity mode.
+**Highlights**
 
-#### Parameters
+- Bloch-wave decomposition
+- Unit-cell periodicity
+- Numerical verification of lattice translation symmetry
 
-- Background refractive index: $n_{\mathrm{bg}} = 1.0$
-- Rod refractive index: $n_{\mathrm{rod}} = 3.5$
-- Primitive lattice constant: $a = 1.0$
-- Rod radius: $r = 0.2a$
-- Supercell size: $5\times5$
-- Supercell reciprocal-lattice index limit: $N=7$
-- Number of supercell plane waves: $225$
-- Number of calculated supercell bands: $40$
-- Localization radius: $0.75a$
-
-#### TE Supercell Eigenvalue Problem
-
-The same missing-rod supercell, wavevector path, field reconstruction, and
-localization procedure introduced in P16 are applied to TE polarization.
-
-For TE modes, the nonzero out-of-plane field component is $H_z$, and the
-plane-wave matrix uses the Fourier coefficients of the inverse dielectric
-function:
-
-```math
-A^{\mathrm{TE}}_{\mathbf G,\mathbf G'}
-=
-(\mathbf k+\mathbf G)
-\cdot
-(\mathbf k+\mathbf G')
-\left(
-\frac{1}{\varepsilon}
-\right)_{\mathbf G-\mathbf G'}.
-```
-
-#### Perfect-Crystal TE Band Gaps
-
-Three TE gaps are detected for the selected numerical parameters:
-
-- $0.849906$ to $0.851379$
-- $0.950378$ to $0.951968$
-- $1.269340$ to $1.323644$
-
-The first two gaps are extremely narrow and may be sensitive to reciprocal-basis
-truncation and wavevector sampling. No calculated $\Gamma_s$-point supercell
-mode lies inside any of the three intervals.
-
-#### TE Mode Search
-
-A genuine TE defect mode must both lie inside a perfect-crystal TE gap and be
-localized near the missing rod.
-
-No calculated $\Gamma_s$-point TE supercell mode satisfies the in-gap
-condition. The program therefore selects the nonzero-frequency TE mode with the
-largest central localization as a comparison candidate.
-
-The selected candidate has
-
-```math
-\frac{\omega a}{2\pi c}
-=
-0.183559,
-```
-
-and
-
-```math
-\eta
-=
-0.2201.
-```
-
-Its frequency lies far below the calculated TE gaps, so it is not a genuine
-band-gap cavity mode.
-
-#### Interpretation
-
-The reconstructed $|H_z|^2$ distribution contains a central maximum, but
-substantial intensity remains near the supercell edges and corners.
-
-A central maximum alone does not establish a defect cavity. Because the mode
-lies in an allowed TE band and remains spatially extended, it is labelled as
-the best TE candidate rather than as a localized TE defect mode.
-
-#### Output
+**Key result:** The translated field overlaps with the phase-shifted original,
+confirming $E_k(x+a)=e^{ika}E_k(x)$.
 
 <p align="center">
-  <img
-    src="figures/p17_2d_te_defect_cavity.png"
-    alt="Two-dimensional TE missing-rod point-defect supercell, selected candidate band, and magnetic-field intensity"
-    width="950"
-  >
+  <img src="figures/p02_bloch_wave_visualization.png" alt="Bloch-wave decomposition" width="650">
 </p>
 
-The figure combines the missing-rod supercell, the selected TE candidate band,
-and the normalized $|H_z|^2$ distribution. No TE gap is shaded because the
-selected mode is not an in-gap defect state.
+<p align="center">
+  <img src="figures/p02_bloch_translation_verification.png" alt="Bloch translation verification" width="650">
+</p>
 
-#### TE–TM Comparison
+#### P03 — Bragg Scattering and Standing Waves
 
-The same missing-rod geometry produces fundamentally different behavior for the
-two polarizations.
+**Description**
 
-For TM polarization,
+Illustrate Bragg coupling at the first Brillouin-zone boundary. The forward and
+backward waves combine into two standing-wave patterns that sample the low- and
+high-index regions differently.
+
+**Highlights**
+
+- Bragg scattering at $k=\pi/a$
+- Symmetric and antisymmetric standing waves
+- Physical origin of the first photonic band gap
+
+**Key result:** The two zone-boundary modes have different dielectric overlap
+and therefore split in frequency, opening a band gap.
+
+<p align="center">
+  <img src="figures/p03_bragg_standing_waves.png" alt="Bragg standing waves" width="650">
+</p>
+
+#### P04 — Transfer Matrix and Transmission Spectrum
+
+**Description**
+
+Calculate the transmission spectrum of a finite multilayer photonic crystal by
+combining interface and propagation matrices across all unit cells.
+
+**Highlights**
+
+- Layer and interface transfer matrices
+- Finite-crystal transmission
+- Direct observation of photonic stop bands
+
+**Key result:** High-transmission pass bands alternate with strongly suppressed
+frequency intervals as a consequence of coherent multiple scattering.
+
+<p align="center">
+  <img src="figures/p04_transmission_spectrum.png" alt="Transfer-matrix transmission spectrum" width="650">
+</p>
+
+#### P05 — Allowed and Forbidden Frequency Bands
+
+**Description**
+
+Classify the spectrum of the infinite periodic medium from the trace of the
+unit-cell transfer matrix.
+
+**Highlights**
+
+- Bloch function from the unit-cell matrix
+- Automatic pass-band and stop-band classification
+- Connection between infinite-crystal bands and finite-crystal transmission
+
+The propagation criterion is
 
 ```math
-\frac{\omega a}{2\pi c}
-\approx
-0.3797,
-\qquad
-\eta_{\mathrm{TM}}
-\approx
-0.77,
+\left|\frac{1}{2}\operatorname{Tr}(M_{\mathrm{cell}})\right|\leq 1.
 ```
 
-and the mode lies inside the first TM band gap.
+**Key result:** Frequencies satisfying the inequality support real Bloch
+wavevectors; frequencies outside it form forbidden bands.
 
-For TE polarization,
+<p align="center">
+  <img src="figures/p05_bloch_function.png" alt="Bloch function" width="650">
+</p>
+
+<p align="center">
+  <img src="figures/p05_allowed_forbidden_bands.png" alt="Allowed and forbidden bands" width="650">
+</p>
+
+#### P06 — Complex Bloch Wavevector
+
+**Description**
+
+Extend the Bloch-wave calculation into forbidden frequency intervals and track
+both the phase and attenuation of the resulting complex wavevector.
+
+**Highlights**
+
+- Real and imaginary parts of $k(\omega)$
+- Propagating-to-evanescent transition
+- Quantitative attenuation inside a band gap
+
+**Key result:** The imaginary component vanishes in allowed bands and becomes
+nonzero in forbidden bands, producing exponential decay through the crystal.
+
+<p align="center">
+  <img src="figures/p06_bloch_wavevector.png" alt="Complex Bloch wavevector" width="650">
+</p>
+
+#### P07 — Photonic Band Structure
+
+**Description**
+
+Assemble the allowed frequencies into the one-dimensional photonic band
+structure along the $X\rightarrow\Gamma\rightarrow X$ path.
+
+**Highlights**
+
+- Normalized frequency and wavevector coordinates
+- Multiple photonic bands
+- Band gaps visible as empty frequency intervals
+
+**Key result:** Continuous branches identify propagating states, while the
+separating intervals contain no real Bloch wavevector.
+
+<p align="center">
+  <img src="figures/p07_photonic_band_structure.png" alt="One-dimensional photonic band structure" width="650">
+</p>
+
+#### P08 — Band-Gap Parameter Study
+
+**Description**
+
+Study how refractive-index contrast, fill fraction, and crystal length control
+the first one-dimensional photonic band gap and the transmission suppression of
+a finite device.
+
+**Highlights**
+
+- Index-contrast sweep
+- Fill-fraction optimization
+- Finite-size scaling with the number of cells
+- Separation of intrinsic band structure from finite-crystal effects
+
+**Key results**
+
+- Raising $n_2$ from $1.5$ to $4.5$ shifts the first gap center from about
+  $0.399$ to $0.166$ and increases its relative width from $0.243$ to $0.541$.
+- The relative gap width peaks near $f\approx0.80$, close to the
+  equal-optical-thickness prediction $f_{\mathrm{opt}}\approx0.778$.
+- At the gap center, transmission falls from approximately
+  $8.26\times10^{-2}$ for two cells to $3.43\times10^{-15}$ for twenty cells.
+
+<p align="center">
+  <img src="figures/p08_index_contrast_transmission.png" alt="Index-contrast transmission study" width="650">
+</p>
+
+<p align="center">
+  <img src="figures/p08_fill_fraction_relative_gap_width.png"
+  alt="Relative gap width versus fill fraction" width="650">
+</p>
+
+<p align="center">
+  <img src="figures/p08_cell_number_gap_suppression.png" alt="Band-gap suppression versus crystal length" width="650">
+</p>
+
+#### P09 — One-Dimensional Band-Edge Field Profiles
+
+**Description**
+
+Locate the edges of the first band gap and reconstruct the corresponding
+standing-wave intensity profiles across several unit cells.
+
+**Highlights**
+
+- Numerical band-edge detection
+- Real-space field reconstruction
+- Dielectric-energy interpretation of frequency splitting
+
+**Key result:** The first gap extends approximately from $0.155319$ to
+$0.263047$. The lower-edge mode is concentrated mainly in the high-index
+layers, whereas the upper-edge mode favors the low-index layers.
+
+<p align="center">
+  <img src="figures/p09_band_edge_field_profiles.png" alt="One-dimensional band-edge field profiles" width="650">
+</p>
+
+#### P10 — One-Dimensional Defect Mode
+
+**Description**
+
+Break translational symmetry by modifying the central layer of a finite
+one-dimensional photonic crystal. The local defect creates a narrow resonant
+state inside the surrounding stop band.
+
+**Highlights**
+
+- Defect-layer transfer matrix
+- In-gap transmission resonance
+- Spatially localized resonant field
+
+**Key result:** A sharp transmission peak appears inside the first stop band,
+and its reconstructed field is concentrated around the central defect while
+decaying into the Bragg mirrors.
+
+<p align="center">
+  <img src="figures/p10_1d_defect_mode.png" alt="One-dimensional defect resonance and localized field" width="750">
+</p>
+
+### Two-Dimensional Photonic Crystals
+
+#### P11 — Two-Dimensional Periodic Dielectric
+
+**Description**
+
+Construct a square lattice of circular dielectric rods and visualize its
+two-dimensional real-space permittivity distribution.
+
+**Highlights**
+
+- Square-lattice geometry
+- Circular dielectric rods
+- Adjustable radius and dielectric contrast
+- Real-space foundation for the reciprocal-space calculations
+
+**Key result:** The periodic rod array provides the base two-dimensional
+geometry used throughout P12–P18.
+
+<p align="center">
+  <img src="figures/p11_2d_dielectric_structure.png" alt="Two-dimensional periodic dielectric" width="650">
+</p>
+
+#### P12 — Reciprocal Lattice and Brillouin Zone
+
+**Description**
+
+Construct the reciprocal lattice, first Brillouin zone, and standard
+$\Gamma\rightarrow X\rightarrow M\rightarrow\Gamma$ wavevector path for the
+square photonic crystal.
+
+**Highlights**
+
+- Reciprocal-lattice vectors
+- First Brillouin zone
+- High-symmetry points
+- Wavevector sampling for band calculations
+
+**Key result:** Lattice symmetry reduces the band calculation to the conventional
+high-symmetry boundary of the irreducible Brillouin zone.
+
+<p align="center">
+  <img src="figures/p12_reciprocal_lattice_brillouin_zone.png"
+  alt="Reciprocal lattice and first Brillouin zone" width="750">
+</p>
+
+#### P13 — Fourier Coefficients of the Dielectric Function
+
+**Description**
+
+Calculate and visualize the Fourier coefficients of the dielectric and inverse
+dielectric functions for circular rods on a square lattice.
+
+**Highlights**
+
+- Analytic circular-inclusion form factor
+- Dielectric and inverse-dielectric coefficients
+- Hermitian convolution matrices
+- Reciprocal-space input for plane-wave expansion
+
+**Key result:** The reciprocal-space coefficients retain the expected square
+symmetry and supply the convolution matrices used by the TE and TM solvers.
+
+<p align="center">
+  <img src="figures/p13_fourier_coefficients.png"
+  alt="Fourier coefficients of the dielectric function" width="750">
+</p>
+
+#### P14 — Two-Dimensional TE and TM Band Structure
+
+**Description**
+
+Solve the TE and TM Maxwell eigenvalue problems with the plane-wave expansion
+method and calculate the bands of a square lattice of dielectric rods.
+
+**Highlights**
+
+- TE and TM eigenvalue formulations
+- Plane-wave basis in reciprocal space
+- Square-lattice high-symmetry path
+- Polarization-dependent dispersion
+
+**Key result:** TE and TM bands respond differently to the same dielectric
+geometry, demonstrating the strong polarization dependence of a two-dimensional
+photonic crystal.
+
+<p align="center">
+  <img src="figures/p14_2d_te_tm_band_structure.png" alt="Two-dimensional TE and TM band structure" width="750">
+</p>
+
+#### P15 — Complete Photonic Band-Gap Search
+
+**Description**
+
+Extract frequency intervals between neighboring TE and TM bands, compare their
+polarization-specific gaps, and identify any overlap that forms a complete
+two-dimensional photonic band gap.
+
+**Highlights**
+
+- Automatic band-gap extraction
+- TE–TM overlap analysis
+- Complete-gap identification
+- Direct connection between bulk bands and defect-state searches
+
+**Key result:** Polarization-specific gaps provide the reference windows used to
+search for localized cavity states and guided waveguide modes in P16–P18.
+
+<p align="center">
+  <img src="figures/p15_complete_band_gap_search.png" alt="Complete photonic band-gap search" width="650">
+</p>
+
+### Defect Cavities and Waveguides
+
+#### P16 — Two-Dimensional TM Point-Defect Cavity
+
+**Description**
+
+Introduce a missing rod into a square-lattice supercell, solve the TM defect
+bands, and reconstruct candidate cavity fields in real space.
+
+**Highlights**
+
+- Point-defect supercell geometry
+- Folded TM band structure
+- In-gap state search
+- Quantitative field-localization analysis
+
+The localization factor is evaluated from the fraction of modal intensity in a
+region surrounding the missing rod:
 
 ```math
-\frac{\omega a}{2\pi c}
-\approx
-0.1836,
-\qquad
-\eta_{\mathrm{TE}}
-\approx
-0.22,
+\eta_{\mathrm{loc}}
+=\frac{\int_{\mathrm{defect}} |E_z|^2\,dA}
+{\int_{\mathrm{supercell}} |E_z|^2\,dA}.
 ```
 
-and the selected mode lies in an allowed band.
+**Key result:** The localized TM cavity mode occurs at approximately
+$\omega a/(2\pi c)=0.3797$. Its strong defect-region localization, measured by
+$\eta_{\mathrm{loc}}$, distinguishes it from the extended folded bands.
 
-The rods-in-air missing-rod structure therefore supports a genuine TM
-photonic-crystal cavity mode but not a corresponding TE cavity mode.
+<p align="center">
+  <img src="figures/p16_2d_tm_defect_cavity.png" alt="Two-dimensional TM point-defect cavity" width="750">
+</p>
+
+#### P17 — Two-Dimensional TE Point-Defect Cavity
+
+**Description**
+
+Apply the same supercell workflow to the TE polarization and test whether the
+same missing-rod geometry produces a comparable in-gap cavity state.
+
+**Highlights**
+
+- TE supercell eigenvalue problem
+- Bulk-gap and defect-band comparison
+- Polarization-selective defect response
+- Polarization-dependent cavity comparison
+
+**Key result:** Unlike the TM calculation, the selected geometry does not
+produce a suitable low-frequency in-gap TE cavity mode. This negative result
+demonstrates that a defect effective for one polarization need not confine the
+other.
+
+<p align="center">
+  <img src="figures/p17_2d_te_defect_cavity.png" alt="Two-dimensional TE point-defect cavity analysis" width="750">
+</p>
+
+#### P18 — Photonic-Crystal Waveguide
+
+**Description**
+
+Remove one complete row of rods to form a W1 line defect, calculate the TM
+projected band structure of the rectangular supercell, and identify a guided
+mode through transverse field confinement.
+
+**Highlights**
+
+- Line-defect waveguide geometry
+- Rectangular supercell and reciprocal basis
+- TM projected bands along the propagation direction
+- Guided-mode selection inside a bulk-gap search interval
+- Real-space field reconstruction and confinement measurement
+
+The confinement factor measures the fraction of modal intensity inside a strip
+of width $w$ centered on the waveguide:
+
+```math
+\eta_{\mathrm{conf}}
+=\frac{\int_{|y|\leq w/2}|E_z(x,y)|^2\,dx\,dy}
+{\int |E_z(x,y)|^2\,dx\,dy}.
+```
+
+**Key result:** At the selected wavevector, candidate band 6 has normalized
+frequency $\omega a/(2\pi c)\approx0.3687$ and confinement
+$\eta_{\mathrm{conf}}\approx0.7995$. The field is concentrated in the missing
+row and decays rapidly into the surrounding crystal. A lower candidate near
+$0.2554$ has confinement of only about $0.0138$ and is therefore rejected as an
+extended state.
+
+<p align="center">
+  <img src="figures/p18_waveguide_structure.png" alt="W1 photonic-crystal waveguide" width="650">
+</p>
+
+<p align="center">
+  <img src="figures/p18_waveguide_projected_band_structure.png"
+  alt="TM projected waveguide band structure" width="650">
+</p>
+
+<p align="center">
+  <img src="figures/p18_waveguide_mode_field.png" alt="Transversely confined TM guided mode" width="650">
+</p>
+
+## Documentation
+
+The detailed physical models, parameters, equations, numerical procedures,
+figures, and interpretations from the original project documentation are
+available in the following module pages.
+
+### One-Dimensional Photonic Crystals
+
+- [P01 — One-Dimensional Periodic Dielectric](docs/P01.md)
+- [P02 — Bloch Wave Visualization](docs/P02.md)
+- [P03 — Bragg Scattering and Standing Waves](docs/P03.md)
+- [P04 — Transfer Matrix and Transmission Spectrum](docs/P04.md)
+- [P05 — Allowed and Forbidden Frequency Bands](docs/P05.md)
+- [P06 — Complex Bloch Wavevector](docs/P06.md)
+- [P07 — Photonic Band Structure](docs/P07.md)
+- [P08 — Band-Gap Parameter Study](docs/P08.md)
+- [P09 — One-Dimensional Band-Edge Field Profiles](docs/P09.md)
+- [P10 — One-Dimensional Defect Mode](docs/P10.md)
+
+### Two-Dimensional Photonic Crystals
+
+- [P11 — Two-Dimensional Periodic Dielectric](docs/P11.md)
+- [P12 — Reciprocal Lattice and Brillouin Zone](docs/P12.md)
+- [P13 — Fourier Coefficients of the Dielectric Function](docs/P13.md)
+- [P14 — Two-Dimensional TE and TM Band Structures](docs/P14.md)
+- [P15 — Complete Photonic Band-Gap Search](docs/P15.md)
+
+### Defect Cavities and Waveguides
+
+- [P16 — Two-Dimensional TM Point-Defect Cavity](docs/P16.md)
+- [P17 — Two-Dimensional TE Point-Defect Cavity](docs/P17.md)
+- [P18 — Photonic Crystal Waveguide](docs/P18.md)
 
 ## Project Structure
 
 ```text
 computational-photonic-crystals/
+├── docs/
+│   ├── P01.md
+│   ├── ...
+│   └── P18.md
+├── figures/
+│   ├── p01_*.png
+│   ├── ...
+│   └── p18_*.png
 ├── scripts/
 │   ├── p01_periodic_dielectric.py
-│   ├── p02_bloch_wave_visualization.py
-│   ├── p03_bragg_standing_waves.py
-│   ├── p04_transfer_matrix.py
-│   ├── p05_bloch_band_structure.py
-│   ├── p06_bloch_wavevector.py
-│   ├── p07_photonic_band_structure.py
-│   ├── p08_band_gap_parameter_study.py
-│   ├── p09_band_edge_field_profiles.py
-│   ├── p10_1d_defect_mode.py
-│   ├── p11_2d_dielectric_structure.py
-│   ├── p12_reciprocal_lattice_brillouin_zone.py
-│   ├── p13_fourier_coefficients.py
-│   ├── p14_2d_te_tm_band_structure.py
-│   ├── p15_complete_band_gap_search.py
-│   ├── p16_2d_tm_defect_cavity.py
-│   └── p17_2d_te_defect_cavity.py
+│   ├── ...
+│   └── p18_photonic_crystal_waveguide.py
 ├── utils/
-│   ├── __init__.py
-│   ├── bloch_utils.py
-│   ├── defect_utils.py
-│   ├── field_profile_utils.py
-│   ├── field_transfer_utils.py
-│   ├── transfer_matrix_utils.py
-│   ├── transmission_utils.py
-│   ├── reciprocal_lattice_utils.py
-│   ├── fourier_utils.py
-│   ├── plotting_utils.py
+│   ├── field_reconstruction_utils.py
 │   ├── plane_wave_expansion_utils.py
-│   ├── band_gap_utils.py
-│   └── supercell_utils.py
-├── figures/
-│   ├── p01_periodic_dielectric.png
-│   ├── p02_bloch_wave_visualization.png
-│   ├── p02_bloch_translation_verification.png
-│   ├── p03_bragg_standing_waves.png
-│   ├── p04_transmission_spectrum.png
-│   ├── p05_bloch_function.png
-│   ├── p05_allowed_forbidden_bands.png
-│   ├── p06_bloch_wavevector.png
-│   ├── p07_photonic_band_structure.png
-│   ├── p08_cell_number_gap_suppression.png
-│   ├── p08_cell_number_transmission.png
-│   ├── p08_fill_fraction_gap_edges.png
-│   ├── p08_fill_fraction_gap_width.png
-│   ├── p08_fill_fraction_relative_gap_width.png
-│   ├── p08_fill_fraction_transmission.png
-│   ├── p08_index_contrast_gap_edges.png
-│   ├── p08_index_contrast_gap_width.png
-│   ├── p08_index_contrast_relative_gap_width.png
-│   ├── p08_index_contrast_transmission.png
-│   ├── p09_band_edge_field_profiles.png
-│   ├── p10_1d_defect_mode.png
-│   ├── p11_2d_dielectric_structure.png
-│   ├── p12_reciprocal_lattice_brillouin_zone.png
-│   ├── p13_fourier_coefficients.png
-│   ├── p14_2d_te_tm_band_structure.png
-│   ├── p15_complete_band_gap_search.png
-│   ├── p16_2d_tm_defect_cavity.png
-│   └── p17_2d_te_defect_cavity.png
+│   └── waveguide_utils.py
 ├── requirements.txt
+├── LICENSE
 ├── .gitignore
 └── README.md
 ```
 
+- `docs/` contains the complete physical and numerical documentation for each module.
+- `scripts/` contains the executable P01–P18 modules.
+- `utils/` contains shared transfer-matrix, plane-wave-expansion, geometry, and
+  field-reconstruction routines.
+- `figures/` contains the generated visual results used throughout this README.
+
 ## Status
 
-The project currently contains a complete introductory workflow for numerical
-one-dimensional and two-dimensional photonic-crystal modeling.
+The introductory P01–P18 sequence is complete. It currently covers:
 
-The one-dimensional modules connect periodic dielectric structures, Bloch
-waves, Bragg scattering, transfer-matrix transmission, allowed and forbidden
-bands, complex Bloch wavevectors, band structures, parameter-dependent gap
-behavior, band-edge field profiles, and localized defect resonances.
+- one-dimensional periodic media, band structures, and defect resonances;
+- two-dimensional TE and TM plane-wave expansion;
+- polarization-dependent bulk band gaps;
+- point-defect cavity states; and
+- a line-defect waveguide with quantitative mode-confinement analysis.
 
-The two-dimensional modules construct a square lattice of dielectric rods,
-generate its reciprocal lattice and Brillouin zone, calculate dielectric
-Fourier coefficients, solve the TE and TM plane-wave Maxwell eigenvalue
-problems, and search for polarization-dependent and complete photonic band
-gaps.
+Possible future extensions include convergence studies, group velocity and
+slow-light analysis, automated transfer of bulk-gap bounds to defect searches,
+finite-difference time-domain simulations, and cavity quality-factor estimates.
 
-The framework has also been extended to defect supercells. A missing central
-rod produces a nearly flat, strongly localized TM defect band inside the first
-TM gap, while the same geometry does not produce a genuine in-gap TE cavity
-mode. This comparison demonstrates the polarization-dependent nature of
-photonic-crystal defect confinement.
+## License
 
-Possible future extensions include reciprocal-basis and supercell convergence
-studies, optimization of defect geometries, complete-band-gap searches over
-parameter space, and the design of two-dimensional line-defect waveguides.
+This project is distributed under the MIT License. See `LICENSE` for the full
+license text.
+
+Copyright (c) 2026 Guoran Yao.
