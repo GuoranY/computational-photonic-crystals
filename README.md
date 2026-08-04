@@ -153,7 +153,7 @@ unit-cell transfer matrix.
 The propagation criterion is
 
 ```math
-\left|\frac{1}{2}\operatorname{Tr}(M_{\mathrm{cell}})\right|\leq 1.
+\left|\frac{1}{2}\mathrm{Tr}(M_{\mathrm{cell}})\right|\leq 1.
 ```
 
 **Key result:** Frequencies satisfying the inequality support real Bloch
