@@ -219,3 +219,8 @@ __marimo__/
 
 .idea/
 *.iml
+
+.DS_Store
+.venv/
+__pycache__/
+*.py[cod]
