@@ -542,16 +542,16 @@ computational-photonic-crystals/
 │   ├── ...
 │   └── P18.md
 ├── figures/
-│   ├── p01_*.png
+│   ├── p01_periodic_dielectric.png
 │   ├── ...
-│   └── p18_*.png
+│   └── p18_waveguide_structure.png
 ├── scripts/
 │   ├── p01_periodic_dielectric.py
 │   ├── ...
 │   └── p18_photonic_crystal_waveguide.py
 ├── utils/
 │   ├── field_reconstruction_utils.py
-│   ├── plane_wave_expansion_utils.py
+│   ├── ...
 │   └── waveguide_utils.py
 ├── requirements.txt
 ├── LICENSE
